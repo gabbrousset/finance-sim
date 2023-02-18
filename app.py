@@ -6,6 +6,8 @@ from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
+from dotenv import load_dotenv
+from pathlib import Path
 
 from helpers import apology, login_required, lookup, usd
 
@@ -33,13 +35,27 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///finance.db")
+THIS_FOLDER = Path(__file__).parent.resolve()
+db = SQL(f"sqlite:////{THIS_FOLDER}/finance.db")
 
 # Allow foreign keys in sqlite db
 db.execute("PRAGMA foreign_keys = ON")
 
+# Create tables
+
+# users
+db.execute("CREATE TABLE IF NOT EXISTS 'users' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'username' TEXT NOT NULL, 'hash' TEXT NOT NULL, 'cash' NUMERIC NOT NULL DEFAULT 10000.00 )")
+db.execute("CREATE UNIQUE INDEX IF NOT EXISTS 'username' ON 'users' ('username')")
+
+# portfolios: symbol, shares, user_id
+db.execute("CREATE TABLE IF NOT EXISTS 'portfolios' ( 'user_id' INTEGER NOT NULL, 'symbol' VARCHAR(5) NOT NULL, 'shares' INTEGER NOT NULL, FOREIGN KEY('user_id') REFERENCES 'users'('id') PRIMARY KEY('user_id', 'symbol') )")
+
+# transactions: user_id, shares, price, symbol
+db.execute("CREATE TABLE IF NOT EXISTS 'transactions' ( 'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'user_id' INTEGER NOT NULL, 'shares' INTEGER NOT NULL,'price' NUMERIC NOT NULL, 'symbol' VARCHAR(5) NOT NULL, 'date' TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, FOREIGN KEY('user_id') REFERENCES 'users'('id') )")
+
 # Make sure API key is set
-if not os.environ.get("API_KEY"):
+load_dotenv()
+if not os.getenv("API_KEY"):
     raise RuntimeError("API_KEY not set")
 
 
