@@ -1,4 +1,4 @@
-# CS50-Finance
+# Finance Sim
 
 ![CS50 Finance Website](finance.png)
 
