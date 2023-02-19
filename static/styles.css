@@ -45,11 +45,17 @@ main table
     text-align: left;
 }
 
+main table.portfolio > :not(:first-child)
+{
+    border-top: 2px solid #c5c5c5;
+}
+
 main tfoot
 {
     /* make total from table bold*/
     font-weight: bold;
 }
+
 main img
 {
     /* constrain images on small screens */

@@ -17,7 +17,7 @@
 
         <link href="/static/styles.css" rel="stylesheet">
 
-        <title>Finance Sim: {% block title %}{% endblock %}</title>
+        <title>FinanceSim: {% block title %}{% endblock %}</title>
 
     </head>
 
@@ -25,11 +25,11 @@
 
         <nav class="navbar navbar-expand-md navbar-light bg-light border">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/"><span class="blue">Finance</span> <span class="yellow">Sim</span></a>
+                <a class="navbar-brand" href="/"><span class="blue">Finance</span><span class="yellow">Sim</span></a>
                 <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbar">
+                <div class="collapse navbar-collapse justify-content-between" id="navbar">
                     {% if session.user_id %}
                         <ul class="navbar-nav mr-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="/">Portfolio</a></li>
@@ -64,7 +64,7 @@
             {% block main %}{% endblock %}
         </main>
 
-        <footer class="mb-5 small text-center text-muted">
+        <footer class="small text-center text-muted">
             Data provided by <a href="https://iexcloud.io/">IEX</a>
         </footer>
 
