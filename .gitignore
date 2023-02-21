@@ -137,3 +137,8 @@ dmypy.json
 
 # PyCharm
 .idea/
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
