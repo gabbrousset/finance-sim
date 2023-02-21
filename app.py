@@ -405,3 +405,11 @@ def errorhandler(e):
 # Listen for errors
 for code in default_exceptions:
     app.errorhandler(code)(errorhandler)
+
+
+# run the app.
+if __name__ == "__main__":
+    # Setting debug to True enables debug output. This line should be
+    # removed before deploying a production app.
+    # app.debug = True
+    app.run()
