@@ -77,7 +77,6 @@ def index():
         total_stock = price_stock * entry["shares"]
         stock = {
             "symbol": quoted["symbol"],
-            "name": quoted["name"],
             "shares": entry["shares"],
             "price": usd(price_stock),
             "total": usd(total_stock)
@@ -272,7 +271,7 @@ def quote():
         if not quoted:
             return apology("invalid symbol", 400)
 
-        return render_template("quoted.html", name=quoted["name"], symbol=quoted["symbol"], price=usd(quoted["price"]))
+        return render_template("quoted.html", symbol=quoted["symbol"], price=usd(quoted["price"]))
 
     else:
         return render_template("quote.html")
@@ -411,5 +410,5 @@ for code in default_exceptions:
 if __name__ == "__main__":
     # Setting debug to True enables debug output. This line should be
     # removed before deploying a production app.
-    # app.debug = True
+    app.debug = True
     app.run(host='0.0.0.0')
