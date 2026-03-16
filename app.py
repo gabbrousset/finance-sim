@@ -1,6 +1,6 @@
 import os
 
-from cs50 import SQL
+from db import SQL
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
@@ -34,12 +34,9 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Configure CS50 Library to use SQLite database
+# Configure SQLite database
 THIS_FOLDER = Path(__file__).parent.resolve()
 db = SQL(f"sqlite:////{THIS_FOLDER}/finance.db")
-
-# Allow foreign keys in sqlite db
-db.execute("PRAGMA foreign_keys = ON")
 
 # Create tables
 
