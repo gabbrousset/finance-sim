@@ -30,7 +30,15 @@ function parseCsv(body: string): HistoricalBar[] {
   return bars;
 }
 
+// Stooq gated CSV downloads behind a free API key in 2024–2025. The key is
+// obtained once via captcha at https://stooq.com/q/d/?s=aapl.us&get_apikey
+// and supplied via STOOQ_API_KEY. Without it, requests return an API-key
+// prompt body instead of CSV — `parseCsv` returns [] in that case (no
+// `Date,` header), but production calls would silently produce empty data.
+// Pass the key in the constructor; routes read STOOQ_API_KEY from env.
 export class StooqAdapter implements MarketData {
+  constructor(private apiKey?: string) {}
+
   async getLiveQuote(_symbol: string): Promise<Quote | null> {
     return null;
   }
@@ -42,7 +50,8 @@ export class StooqAdapter implements MarketData {
     const s = encodeURIComponent(norm.toLowerCase() + '.us');
     const d1 = toStooqDate(from);
     const d2 = toStooqDate(to);
-    const url = `${STOOQ_BASE}?s=${s}&d1=${d1}&d2=${d2}&i=d`;
+    const apiKeyParam = this.apiKey ? `&apikey=${encodeURIComponent(this.apiKey)}` : '';
+    const url = `${STOOQ_BASE}?s=${s}&d1=${d1}&d2=${d2}&i=d${apiKeyParam}`;
 
     const res = await fetch(url);
     const body = await res.text();

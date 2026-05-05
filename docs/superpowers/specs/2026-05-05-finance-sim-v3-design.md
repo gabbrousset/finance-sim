@@ -301,7 +301,7 @@ export interface MarketData {
 ### 7.2 Adapters
 
 - **`FinnhubLiveAdapter`** — `https://finnhub.io/api/v1/quote?symbol={SYMBOL}&token={KEY}`. JSON. Free 60 req/min.
-- **`StooqHistoricalAdapter`** — `https://stooq.com/q/d/l/?s={symbol}.us&d1={YYYYMMDD}&d2={YYYYMMDD}&i=d`. CSV. Free, no key. Empty CSV ⇒ unknown symbol.
+- **`StooqHistoricalAdapter`** — `https://stooq.com/q/d/l/?s={symbol}.us&d1={YYYYMMDD}&d2={YYYYMMDD}&i=d&apikey={KEY}`. CSV. Free, but **requires an API key as of 2024–2025** (sign-up is captcha-only at `https://stooq.com/q/d/?s=aapl.us&get_apikey`; no email or card). Key supplied via `STOOQ_API_KEY`. Empty CSV ⇒ unknown symbol.
 - **`MockMarketData`** — deterministic in-memory prices for tests. Never touches network.
 - **`CachedMarketData`** — wraps a real adapter, reads/writes `quote_cache_live` and `quote_cache_eod`, applies TTL logic.
 
@@ -321,7 +321,7 @@ export interface MarketData {
 ### 7.5 Why Finnhub + Stooq
 
 - Finnhub free: 60 req/min, REST/JSON, stable for years. Alpha Vantage's 25/day is unworkable; Twelve Data's 8/min is uncomfortable for leaderboards; Polygon free is intraday-only with delays.
-- Stooq: free, no key, decades of history, just CSV. Replaces the unofficial Yahoo CSV scrape that broke v2.
+- Stooq: free, decades of history, just CSV. Captcha-acquired API key (no email or card) since 2024–2025; key passed via `STOOQ_API_KEY`. Replaces the unofficial Yahoo CSV scrape that broke v2.
 
 ## 8. Competitions
 
