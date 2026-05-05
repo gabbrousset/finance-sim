@@ -20,7 +20,6 @@ import { createSession } from './sessions';
 import { verifyRecoveryCode, generateRecoveryCodes } from './recovery';
 import { suggestDeviceName } from './aaguid';
 
-// Re-export RpConfig so callers can import from this module only if needed
 export type { RpConfig };
 
 const CHALLENGE_LIFETIME_SEC = 60 * 5; // 5 minutes
@@ -34,19 +33,49 @@ function nowSec(): number {
 }
 
 // ---------------------------------------------------------------------------
-// Challenge storage helpers
+// Challenge storage
+//
+// The challenge row's `userId` column stores either:
+//   - a plain userId string (for beginAddPasskey / beginSignin)
+//   - a JSON-encoded object { userId, username, displayName } (for beginSignup,
+//     so completeSignup can recover the user metadata without a schema change)
 // ---------------------------------------------------------------------------
 
-async function storeChallenge(
+interface SignupMeta {
+  userId: string;
+  username: string;
+  displayName: string;
+}
+
+async function storeRegistrationChallenge(
   db: Db,
   challenge: string,
-  purpose: 'register' | 'authenticate',
-  userId: string | null
+  meta: SignupMeta
 ): Promise<string> {
   const cookieValue = randomBytes(32).toString('base64url');
   const id = hashCookieValue(cookieValue);
   const expiresAt = nowSec() + CHALLENGE_LIFETIME_SEC;
-  db.insert(schema.authChallenges).values({ id, challenge, purpose, userId, expiresAt }).run();
+  db.insert(schema.authChallenges).values({
+    id,
+    challenge,
+    purpose: 'register',
+    userId: JSON.stringify(meta),
+    expiresAt
+  }).run();
+  return cookieValue;
+}
+
+async function storeAuthChallenge(db: Db, challenge: string): Promise<string> {
+  const cookieValue = randomBytes(32).toString('base64url');
+  const id = hashCookieValue(cookieValue);
+  const expiresAt = nowSec() + CHALLENGE_LIFETIME_SEC;
+  db.insert(schema.authChallenges).values({
+    id,
+    challenge,
+    purpose: 'authenticate',
+    userId: null,
+    expiresAt
+  }).run();
   return cookieValue;
 }
 
@@ -54,7 +83,7 @@ function consumeChallenge(
   db: Db,
   cookieValue: string,
   purpose: 'register' | 'authenticate'
-): { challenge: string; userId: string | null } {
+): { challenge: string; rawUserId: string | null } {
   const id = hashCookieValue(cookieValue);
   const row = db.select().from(schema.authChallenges).where(eq(schema.authChallenges.id, id)).get();
   if (!row) throw new Error('challenge not found or already consumed');
@@ -64,7 +93,7 @@ function consumeChallenge(
   }
   if (row.purpose !== purpose) throw new Error(`challenge purpose mismatch: expected ${purpose}`);
   db.delete(schema.authChallenges).where(eq(schema.authChallenges.id, id)).run();
-  return { challenge: row.challenge, userId: row.userId ?? null };
+  return { challenge: row.challenge, rawUserId: row.userId ?? null };
 }
 
 // ---------------------------------------------------------------------------
@@ -96,7 +125,11 @@ export async function beginSignup(
     excludeCredentialIds: []
   });
 
-  const challengeCookieValue = await storeChallenge(db, options.challenge, 'register', userId);
+  const challengeCookieValue = await storeRegistrationChallenge(db, options.challenge, {
+    userId,
+    username,
+    displayName
+  });
 
   return { options, challengeCookieValue };
 }
@@ -117,8 +150,16 @@ export async function completeSignup(
   challengeCookieValue: string,
   attestation: RegistrationResponseJSON
 ): Promise<CompleteSignupResult> {
-  const { challenge, userId: allocatedUserId } = consumeChallenge(db, challengeCookieValue, 'register');
-  if (!allocatedUserId) throw new Error('challenge missing userId');
+  const { challenge, rawUserId } = consumeChallenge(db, challengeCookieValue, 'register');
+  if (!rawUserId) throw new Error('challenge missing user metadata');
+
+  let meta: SignupMeta;
+  try {
+    meta = JSON.parse(rawUserId) as SignupMeta;
+  } catch {
+    // Fallback: plain userId string (beginAddPasskey path — shouldn't reach completeSignup)
+    throw new Error('challenge is not a signup challenge');
+  }
 
   const verification = await verifyRegistration({
     rp,
@@ -135,56 +176,38 @@ export async function completeSignup(
 
   const now = nowSec();
 
-  // Not wrapped in a transaction — argon2 hashing in generateRecoveryCodes is async
-  // and better-sqlite3 transactions are sync. Sequential inserts are fine at this scale.
+  // Not wrapped in a transaction — generateRecoveryCodes uses async argon2 hashing
+  // and better-sqlite3 transactions are synchronous. Sequential inserts are fine at this scale.
 
   db.insert(schema.users).values({
-    id: allocatedUserId,
-    username: attestation.response ? (await _getUsernameFromChallenge(db, challenge) ?? allocatedUserId) : allocatedUserId,
-    displayName: allocatedUserId, // will be overridden below
+    id: meta.userId,
+    username: meta.username,
+    displayName: meta.displayName,
     cashCents: 1_000_000,
     createdAt: now
   }).run();
 
-  // Unfortunately we don't have username/displayName here since we only stored userId in challenge.
-  // We need to re-read from what the options had. However, since we didn't store username in challenge,
-  // we need to get it from the attestation clientDataJSON or another mechanism.
-  // The spec says: store userId in challenge, create user with data from attestation.
-  // The attestation response's clientDataJSON doesn't contain username.
-  // We'll need to store username in the challenge userId slot or a separate mechanism.
-  // For now, use the credential id as a placeholder and update. Actually the simplest approach:
-  // store the username in the challenge row itself — but the schema only has purpose, userId, challenge.
-  // We have to make do: the username is embedded in the registration options user.name field,
-  // but we don't have it here. Let's fix this by reading it from the passkey perspective.
-  // Actually the simplest fix: store displayName in the challenge's userId field as JSON.
-  // But we can't change the schema. Let's re-read: the registration options encode userId in the
-  // userID field. We can decode the attestation's clientDataJSON... no.
-  // Real solution: insert the user row in beginSignup with a "pending" flag, or store username
-  // separately. But the spec says don't insert yet.
-  // For now: query the user we just inserted and update with placeholder values.
-  // Actually the routes will call beginSignup with username+displayName, and completeSignup
-  // only has the attestation. The username must come from somewhere.
-  // Pragmatic fix: encode username/displayName as JSON in the challenge.userId field.
-  // Wait — we already stored userId as the cuid2. Let me reconsider the storage pattern.
-  // The challenge row has: id (hash), challenge (base64url), purpose, userId (text nullable), expiresAt.
-  // We could abuse userId to store "userId|username|displayName" but that's ugly.
-  // Better: store a separate challenge-metadata approach.
-  // For now, the simplest fix with no schema changes: the test for completeSignup is in E2E,
-  // not unit tests. We just need the signature to compile and the 5 unit tests to pass.
-  // The user insert above is wrong though. Let me rewrite this properly.
+  const passkeyId = createId();
+  db.insert(schema.passkeys).values({
+    id: passkeyId,
+    userId: meta.userId,
+    credentialId: credential.id,
+    publicKey: Buffer.from(credential.publicKey),
+    counter: credential.counter,
+    transports: JSON.stringify(credential.transports ?? []),
+    deviceName: suggestDeviceName(aaguid),
+    aaguid,
+    backupEligible: credentialDeviceType === 'multiDevice' ? 1 : 0,
+    backupState: credentialBackedUp ? 1 : 0,
+    createdAt: now,
+    lastUsedAt: now
+  }).run();
 
-  // This placeholder insert was wrong — delete it
-  db.delete(schema.users).where(eq(schema.users.id, allocatedUserId)).run();
+  const recoveryCodes = await generateRecoveryCodes(db, meta.userId);
 
-  // Real implementation: we need username. Since we can't change schema, encode as JSON in userId.
-  // This is handled in beginSignup by storing JSON. But we already stored just userId.
-  // The E2E tests cover completeSignup. For now throw if we somehow got here with bad data.
-  throw new Error('completeSignup: username not recoverable from challenge — call beginSignup with encoded metadata');
-}
+  const { cookieValue: sessionCookieValue } = await createSession(db, meta.userId, 'signup');
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function _getUsernameFromChallenge(_db: Db, _challenge: string): Promise<string | null> {
-  return null;
+  return { userId: meta.userId, recoveryCodes, sessionCookieValue };
 }
 
 // ---------------------------------------------------------------------------
@@ -196,7 +219,7 @@ export async function beginSignin(
   rp: RpConfig
 ): Promise<{ options: PublicKeyCredentialRequestOptionsJSON; challengeCookieValue: string }> {
   const options = await generateAuthenticationChallenge({ rp });
-  const challengeCookieValue = await storeChallenge(db, options.challenge, 'authenticate', null);
+  const challengeCookieValue = await storeAuthChallenge(db, options.challenge);
   return { options, challengeCookieValue };
 }
 
@@ -211,14 +234,14 @@ export async function completeSignin(
   assertion: AuthenticationResponseJSON,
   userAgent: string
 ): Promise<{ sessionCookieValue: string; userId: string } | null> {
-  let challengeData: { challenge: string; userId: string | null };
+  let challengeData: { challenge: string; rawUserId: string | null };
   try {
     challengeData = consumeChallenge(db, challengeCookieValue, 'authenticate');
   } catch {
     return null;
   }
 
-  // Find the passkey by credentialId (assertion.id is the base64url credentialId)
+  // assertion.id is the base64url-encoded credentialId
   const passkey = db
     .select()
     .from(schema.passkeys)
@@ -281,8 +304,18 @@ export async function beginAddPasskey(
     excludeCredentialIds: existingPasskeys.map((p) => p.credentialId)
   });
 
-  const challengeCookieValue = await storeChallenge(db, options.challenge, 'register', userId);
-  return { options, challengeCookieValue };
+  // Store userId as plain string (not JSON) — completeAddPasskey uses a separate userId param
+  const cookieValue = randomBytes(32).toString('base64url');
+  const id = hashCookieValue(cookieValue);
+  db.insert(schema.authChallenges).values({
+    id,
+    challenge: options.challenge,
+    purpose: 'register',
+    userId,
+    expiresAt: nowSec() + CHALLENGE_LIFETIME_SEC
+  }).run();
+
+  return { options, challengeCookieValue: cookieValue };
 }
 
 // ---------------------------------------------------------------------------
@@ -296,7 +329,17 @@ export async function completeAddPasskey(
   challengeCookieValue: string,
   attestation: RegistrationResponseJSON
 ): Promise<{ passkeyId: string }> {
-  const { challenge, userId: challengeUserId } = consumeChallenge(db, challengeCookieValue, 'register');
+  const { challenge, rawUserId } = consumeChallenge(db, challengeCookieValue, 'register');
+
+  // rawUserId is either a plain string userId or a JSON signup meta — handle both
+  let challengeUserId: string;
+  try {
+    const meta = JSON.parse(rawUserId ?? '') as SignupMeta;
+    challengeUserId = meta.userId;
+  } catch {
+    challengeUserId = rawUserId ?? '';
+  }
+
   if (challengeUserId !== userId) throw new Error('challenge userId mismatch');
 
   const verification = await verifyRegistration({
