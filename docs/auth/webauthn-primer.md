@@ -230,7 +230,7 @@ authData:
 
 simplewebauthn exposes it as `registrationInfo.aaguid` (a UUID string).
 
-**What it tells you:** Apple's platform authenticator has a known AAGUID (`fbfc3007-154e-4ecc-8c0b-6e020557d7bd`). Google Password Manager has another. YubiKey 5 NFC has another. By mapping AAGUID → device name, you can show "Signed in with iPhone (Face ID)" in account settings instead of "Passkey ending in a3f9".
+**What it tells you:** each authenticator model has a known AAGUID. Apple Passwords: `fbfc3007-154e-4ecc-8c0b-6e020557d7bd`. iCloud Keychain (managed): `dd4ec289-e01d-41c9-bb89-70fa845d4bf2`. Google Password Manager has another. YubiKey 5 NFC has another. By mapping AAGUID → device name, you can show "Signed in with Apple Passwords" in account settings instead of "Passkey ending in a3f9". (AAGUIDs verified from [passkeydeveloper/passkey-authenticator-aaguids](https://github.com/passkeydeveloper/passkey-authenticator-aaguids) JSON.)
 
 **AAGUID database:** [passkeydeveloper/passkey-authenticator-aaguids](https://github.com/passkeydeveloper/passkey-authenticator-aaguids) on GitHub is the community-maintained list. JSON format, keys are AAGUIDs, values are `{ name, icon_dark, icon_light }`. The readme notes this list may be retired and is not intended for security decisions — use it only for display purposes.
 
@@ -302,7 +302,7 @@ The authenticator increments a counter each time it produces an assertion. The R
 
 **Purpose:** detect cloned authenticators. If someone extracts a private key and puts it in a second device, both devices will produce assertions — but counters diverge. Counter going backwards (or two sessions seeing the same counter value) indicates possible cloning.
 
-**Counter handling — spec §7.2 step 22 guidance:**
+**Counter handling — spec §7.2 (Verifying an Authentication Assertion) guidance:**
 
 ```
 if (newCounter > storedCounter) {
