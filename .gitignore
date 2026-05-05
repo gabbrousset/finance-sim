@@ -35,3 +35,13 @@ pnpm-debug.log*
 coverage/
 playwright-report/
 test-results/
+
+# vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# vercel/netlify/wrangler (if ever deployed there)
+.output
+.vercel
+.netlify
+.wrangler
