@@ -10,7 +10,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const db = getDb();
 	const market = getMarketData();
 	const svc = new CompetitionService(db, market);
-	svc.tickStatuses();
 
 	const userId = locals.user.id;
 

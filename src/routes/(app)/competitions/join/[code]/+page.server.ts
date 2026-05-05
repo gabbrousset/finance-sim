@@ -10,7 +10,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const db = getDb();
 	const market = getMarketData();
 	const svc = new CompetitionService(db, market);
-	svc.tickStatuses();
 
 	const comp = svc.findByInviteCode(params.code);
 	if (!comp) throw error(404, 'invite code not recognized');
