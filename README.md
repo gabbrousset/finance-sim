@@ -1,9 +1,23 @@
-# Finance Sim
+# finance-sim
 
-![CS50 Finance Website](finance.png)
+paper-trading + live and historical competitions, built with sveltekit + passkeys.
 
-https://cs50.harvard.edu/x/2020/tracks/web/finance/
+v3 is a full rewrite — see [docs/](./docs/) for design, architecture, and implementation notes. v2 (flask) is preserved at the `v2` git tag.
 
-## Deployment
+## status
 
-Pushing to `main` automatically deploys to `https://finance.gabbrousset.dev` via GitHub Actions. Work on branches and merge to main when ready to update the live site.
+work in progress on the `v3` branch.
+
+## live
+
+`https://finance.gabbrousset.dev`
+
+## docs
+
+- [`docs/architecture.md`](./docs/architecture.md) — high-level shape
+- [`docs/tech-choices.md`](./docs/tech-choices.md) — why this stack
+- [`docs/data-model.md`](./docs/data-model.md) — schema + invariants
+- [`docs/auth/`](./docs/auth/) — passkeys end-to-end
+- [`docs/market-data/`](./docs/market-data/) — finnhub + stooq + caching
+- [`docs/competitions/`](./docs/competitions/) — live + instant-replay
+- [`docs/testing.md`](./docs/testing.md), [`docs/deployment.md`](./docs/deployment.md)
