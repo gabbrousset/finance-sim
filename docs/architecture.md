@@ -36,8 +36,10 @@ src/
 │   │   ├── signin/
 │   │   └── recover/
 │   ├── api/                      # JSON endpoints (used by client-side fetchers)
-│   │   ├── quote/[symbol]/
+│   │   ├── sparkline/[symbol]/
 │   │   └── leaderboard/[id]/
+│   ├── share/[id]/               # public read-only results (competitions.share_results)
+│   ├── signout/                  # DELETE session → redirect
 │   └── +page.svelte              # landing
 ├── lib/
 │   ├── server/
@@ -56,6 +58,8 @@ src/
 │   │   │   ├── twelvedata.ts     # historical EOD adapter
 │   │   │   ├── cache.ts          # SQLite-backed cache, TTL logic
 │   │   │   ├── market-hours.ts   # NYSE calendar
+│   │   │   ├── mock.ts           # MockMarketData (test double)
+│   │   │   ├── factory.ts        # production singleton accessor
 │   │   │   └── service.ts        # composes finnhub + twelvedata + cache
 │   │   ├── portfolio/
 │   │   │   ├── service.ts        # buy, sell, valuate
@@ -67,7 +71,9 @@ src/
 │   │   ├── nav/
 │   │   ├── charts/               # uPlot wrappers
 │   │   ├── forms/
-│   │   └── tables/
+│   │   ├── tables/
+│   │   ├── Button.svelte
+│   │   └── ThemeToggle.svelte
 │   └── shared/                   # types/utilities used by both client and server
 │       ├── money.ts              # cents <-> dollars formatting
 │       ├── symbols.ts            # validation
