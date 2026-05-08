@@ -6,13 +6,31 @@
 
 	let { form } = $props();
 
-	let type: 'live' | 'historical' = $state(
-		(form?.type === 'historical' ? 'historical' : 'live') as 'live' | 'historical'
-	);
-	let name = $state(form?.name ?? '');
-	let startDate = $state(form?.startDate ?? '');
-	let endDate = $state(form?.endDate ?? '');
-	let startingCash = $state(form?.startingCash ?? '10000');
+	let type: 'live' | 'historical' = $state('live');
+	let name = $state('');
+	let startDate = $state('');
+	let endDate = $state('');
+	let startingCash = $state('10000');
+
+	// Repopulate from the form prop on validation failures so users don't
+	// lose their typed input. Form prop changes after each submit.
+	$effect(() => {
+		if (form?.type === 'historical' || form?.type === 'live') {
+			type = form.type;
+		}
+		if (form && 'name' in form && typeof form.name === 'string') {
+			name = form.name;
+		}
+		if (form && 'startDate' in form && typeof form.startDate === 'string') {
+			startDate = form.startDate;
+		}
+		if (form && 'endDate' in form && typeof form.endDate === 'string') {
+			endDate = form.endDate;
+		}
+		if (form && 'startingCash' in form && typeof form.startingCash === 'string') {
+			startingCash = form.startingCash;
+		}
+	});
 </script>
 
 <h1 class="text-2xl font-semibold">create competition</h1>

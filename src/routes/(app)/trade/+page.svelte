@@ -8,13 +8,21 @@
 	let { data, form } = $props();
 
 	let mode: 'buy' | 'sell' = $state('buy');
-	let symbol = $state(form?.symbol ?? '');
-	let shares = $state(form?.shares != null ? String(form.shares) : '');
+	let symbol = $state('');
+	let shares = $state('');
 
-	// Reset shares input on successful trade.
+	// Repopulate from form prop on validation failures (form prop changes
+	// after each submit). Skip on success — we want to clear shares instead.
 	$effect(() => {
 		if (form?.success) {
 			shares = '';
+			return;
+		}
+		if (form && 'symbol' in form && typeof form.symbol === 'string') {
+			symbol = form.symbol;
+		}
+		if (form && 'shares' in form && form.shares != null) {
+			shares = String(form.shares);
 		}
 	});
 </script>

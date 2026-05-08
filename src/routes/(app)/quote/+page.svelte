@@ -7,9 +7,17 @@
 	import { formatUsd } from '$lib/shared/money';
 
 	let { form } = $props();
-	let symbol = $state(form?.symbol ?? '');
+	let symbol = $state('');
 	let sparkData = $state<number[] | null>(null);
 	let sparkDates = $state<string[] | undefined>();
+
+	// Repopulate the symbol input from the form prop after each submit
+	// (covers the validation-failure echo case).
+	$effect(() => {
+		if (form && 'symbol' in form && typeof form.symbol === 'string') {
+			symbol = form.symbol;
+		}
+	});
 
 	// When the form action returns a successful quote, fetch the sparkline.
 	$effect(() => {
