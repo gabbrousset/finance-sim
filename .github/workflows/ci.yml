@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'LICENSE'
+  push:
+    branches: [main, v3]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'LICENSE'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm test:unit -- --run
+      - run: pnpm build
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
