@@ -32,7 +32,7 @@ Above that, `MarketDataService.getCloseAt` (service.ts:34) redirects today's dat
 
 `MarketDataService.getHistoricalCloses` (service.ts:51-62) is always a remote fetch followed by a cache fill. It does not read the cache first — it calls `this.historical.getHistoricalCloses` unconditionally, then bulk-writes all returned bars via `bulkSetEod` (cache.ts:78-94).
 
-This is the path used when a historical competition resolves: the service fetches the full window from Stooq once per symbol and populates the cache. After that, leaderboard valuation for that window is local-only.
+This is the path used when a historical competition resolves: the service fetches the full window from TwelveData once per symbol and populates the cache. After that, leaderboard valuation for that window is local-only. TwelveData's free tier (8/min, 800/day) is comfortable here — bulk fill is a one-time burst per symbol per competition, and past EOD is cached forever so it never re-fetches.
 
 The read-through behavior (check cache, fetch on miss, write back) applies to single-date lookups via `getCloseAt` (service.ts:42-47), not the bulk path.
 

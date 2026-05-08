@@ -34,7 +34,7 @@ Route: `src/routes/(app)/competitions/[id]/+page.server.ts` — `trade` action.
 For historical comps the route doesn't fetch a price. `svc.tradeInComp()` (`service.ts:222`) handles it:
 
 1. Verifies `status === 'open'`; rejects otherwise.
-2. Calls `market.getCloseAt(symbol, toIsoDate(comp.startDate))`. Throws if Stooq returns null (non-trading day, symbol not found, etc.).
+2. Calls `market.getCloseAt(symbol, toIsoDate(comp.startDate))`. Throws if TwelveData returns null (non-trading day, symbol not found, etc.).
 3. Any `priceCents` argument is ignored — start-date close is the only valid price.
 4. Proceeds identically to live: SQLite transaction updates `competition_holdings`, `competition_cash`, appends to `competition_trades`.
 
@@ -53,7 +53,7 @@ The dashboard load immediately calls `computeLeaderboard()` after resolve return
 
 `computeLeaderboard()` (`leaderboard.ts:64`) prices all holdings at `getCloseAt(symbol, toIsoDate(comp.endDate))` when status is `finished`.
 
-`getCloseAt` checks `quote_cache_eod` first. On first compute after resolve, it's a cache miss: Stooq is fetched and the result written to `quote_cache_eod`. Every subsequent leaderboard view for that comp is local-only — `(symbol, trade_date)` rows for past dates are immutable and never re-fetched.
+`getCloseAt` checks `quote_cache_eod` first. On first compute after resolve, it's a cache miss: TwelveData is fetched and the result written to `quote_cache_eod`. Every subsequent leaderboard view for that comp is local-only — `(symbol, trade_date)` rows for past dates are immutable and never re-fetched.
 
 See [market-data/caching-strategy.md](../market-data/caching-strategy.md#past-eod-is-cached-forever) for the EOD cache invariant.
 

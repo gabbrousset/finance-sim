@@ -7,7 +7,7 @@ nginx (TLS, finance.gabbrousset.dev)
   └─> Node SvelteKit (adapter-node, 127.0.0.1:3002)
         ├─> better-sqlite3 → finance.db (WAL mode)
         ├─> Finnhub  /quote                (live, 60 req/min free)
-        └─> Stooq    historical CSV        (free, captcha-acquired apikey)
+        └─> TwelveData /time_series          (free 800/day, json)
 ```
 
 One process. One deploy artifact. nginx terminates TLS and proxies to the Node process on loopback. SQLite file lives next to the build output. No message queue, no background workers — status transitions run on-request (see [competitions](./competitions/)).
@@ -53,10 +53,10 @@ src/
 │   │   ├── market/
 │   │   │   ├── types.ts          # MarketData interface
 │   │   │   ├── finnhub.ts        # live quote adapter
-│   │   │   ├── stooq.ts          # historical EOD adapter
+│   │   │   ├── twelvedata.ts     # historical EOD adapter
 │   │   │   ├── cache.ts          # SQLite-backed cache, TTL logic
 │   │   │   ├── market-hours.ts   # NYSE calendar
-│   │   │   └── service.ts        # composes finnhub + stooq + cache
+│   │   │   └── service.ts        # composes finnhub + twelvedata + cache
 │   │   ├── portfolio/
 │   │   │   ├── service.ts        # buy, sell, valuate
 │   │   │   └── equity-curve.ts   # ledger + closes → time series

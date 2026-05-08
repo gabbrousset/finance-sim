@@ -36,7 +36,7 @@ nginx (TLS, finance.gabbrousset.dev)
   └─> Node SvelteKit (adapter-node, 127.0.0.1:3002)
         ├─> better-sqlite3 → finance.db (WAL mode)
         ├─> Finnhub  /quote                (live, 60 req/min free)
-        └─> Stooq    historical CSV        (free, no key)
+        └─> TwelveData /time_series          (free 800/day, json)
 ```
 
 One process, one deploy artifact. nginx terminates TLS and proxies. SQLite file lives next to the Node binary.
@@ -82,10 +82,10 @@ src/
 │   │   ├── market/
 │   │   │   ├── types.ts          # MarketData interface
 │   │   │   ├── finnhub.ts        # live quote adapter
-│   │   │   ├── stooq.ts          # historical EOD adapter
+│   │   │   ├── twelvedata.ts     # historical EOD adapter
 │   │   │   ├── cache.ts          # SQLite-backed cache, TTL logic
 │   │   │   ├── market-hours.ts   # NYSE calendar
-│   │   │   └── service.ts        # composes finnhub + stooq + cache, exports default MarketData impl
+│   │   │   └── service.ts        # composes finnhub + twelvedata + cache, exports default MarketData impl
 │   │   ├── portfolio/
 │   │   │   ├── service.ts        # buy, sell, valuate
 │   │   │   └── equity-curve.ts   # ledger + closes → time series
@@ -301,7 +301,7 @@ export interface MarketData {
 ### 7.2 Adapters
 
 - **`FinnhubLiveAdapter`** — `https://finnhub.io/api/v1/quote?symbol={SYMBOL}&token={KEY}`. JSON. Free 60 req/min.
-- **`StooqHistoricalAdapter`** — `https://stooq.com/q/d/l/?s={symbol}.us&d1={YYYYMMDD}&d2={YYYYMMDD}&i=d&apikey={KEY}`. CSV. Free, but **requires an API key as of 2024–2025** (sign-up is captcha-only at `https://stooq.com/q/d/?s=aapl.us&get_apikey`; no email or card). Key supplied via `STOOQ_API_KEY`. Empty CSV ⇒ unknown symbol.
+- **`TwelveDataAdapter`** — `https://api.twelvedata.com/time_series?symbol={SYMBOL}&interval=1day&start_date={YYYY-MM-DD}&end_date={YYYY-MM-DD}&apikey={KEY}`. JSON. Free 800 req/day, proper docs, real signup. Key supplied via `TWELVEDATA_API_KEY`. `status:'error'` body ⇒ unknown symbol or bad key. HTTP 429 or body `code:429` ⇒ `RateLimitError`.
 - **`MockMarketData`** — deterministic in-memory prices for tests. Never touches network.
 - **`CachedMarketData`** — wraps a real adapter, reads/writes `quote_cache_live` and `quote_cache_eod`, applies TTL logic.
 
@@ -318,10 +318,10 @@ export interface MarketData {
 - "Successful HTTP but malformed body" ⇒ throw. Surfaces as a 500 we can investigate.
 - 429 from Finnhub ⇒ typed `RateLimitError`. The route shows "rate-limited, try in a minute"; cache absorbs most of the load.
 
-### 7.5 Why Finnhub + Stooq
+### 7.5 Why Finnhub + TwelveData
 
-- Finnhub free: 60 req/min, REST/JSON, stable for years. Alpha Vantage's 25/day is unworkable; Twelve Data's 8/min is uncomfortable for leaderboards; Polygon free is intraday-only with delays.
-- Stooq: free, decades of history, just CSV. Captcha-acquired API key (no email or card) since 2024–2025; key passed via `STOOQ_API_KEY`. Replaces the unofficial Yahoo CSV scrape that broke v2.
+- Finnhub free: 60 req/min, REST/JSON, stable for years. Alpha Vantage's 25/day is unworkable; Polygon free is intraday-only with delays.
+- TwelveData: free 800/day, JSON, proper docs, real signup. Replaces v2's broken Yahoo CSV scrape and our initial choice of Stooq (which turned out to be a captcha-gated CSV download, not a real API).
 
 ## 8. Competitions
 
@@ -397,7 +397,7 @@ Implemented as a single function `competitions.tickStatuses()` that runs on ever
 ### 10.2 Fixtures and recording
 
 - `MockMarketData` is the canonical test seam.
-- For the production adapters, we keep a small set of recorded fixtures (one Finnhub quote, one Stooq CSV) for parsing tests. No live API calls in CI.
+- For the production adapters, we keep a small set of recorded fixtures (one Finnhub quote JSON, one TwelveData time_series JSON) for parsing tests. No live API calls in CI.
 
 ### 10.3 What we don't test
 
@@ -410,7 +410,7 @@ Implemented as a single function `competitions.tickStatuses()` that runs on ever
 - `setup.sh`: clone/pull, `pnpm install`, `pnpm -r rebuild` (native modules), `pnpm build`, apply migrations.
 - `service.conf`: `ExecStart=/usr/bin/node build` from `~/finance-sim/build` (adapter-node output).
 - `nginx.conf`: drop `uwsgi_pass`, use `proxy_pass http://127.0.0.1:3002`. Keep certbot config.
-- `.env`: `DATABASE_URL`, `FINNHUB_API_KEY`, `SESSION_SECRET`, `RP_ID`, `ORIGIN`. Documented in `.env.example`.
+- `.env`: `DATABASE_URL`, `FINNHUB_API_KEY`, `TWELVEDATA_API_KEY`, `RP_ID`, `ORIGIN`. Documented in `.env.example`.
 - Auto-deploy: existing GitHub Actions workflow stays, allowlist already includes `finance-sim`.
 - Concurrency note: 1 GB RAM + 2 GB swap. SvelteKit/vite build is OK; we monitor.
 
@@ -452,7 +452,7 @@ Docs are written *during* their corresponding implementation phase, not at the e
 
 ## 14. Out-of-scope risks (acknowledged)
 
-- **Stooq going down or rate-limiting.** Mitigation: cache forever for past dates; degraded mode shows "historical data temporarily unavailable" rather than a hard error.
+- **TwelveData rate-limit (8/min, 800/day).** Cache absorbs steady state — past EOD is cached forever, so steady-state is near zero requests. Bulk leaderboard resolutions (one symbol batch per comp) stay well under the daily budget.
 - **Finnhub policy change.** Mitigation: adapter is one file; swappable. Threshold for switching: any pricing-page change.
 - **1 GB droplet OOM during build.** Mitigation: 2 GB swap exists; CI builds elsewhere if it becomes a problem.
 - **Passkey ecosystem shift.** Mitigation: the primer doc is dated; we re-read W3C spec + passkeys.dev before any future auth change.

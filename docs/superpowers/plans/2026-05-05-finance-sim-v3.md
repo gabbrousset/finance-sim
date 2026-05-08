@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rebuild finance-sim as a SvelteKit fullstack app with passkey auth, paper-trading portfolio, live and historical (instant-replay) competitions, free-tier market data (Finnhub + Stooq), polished UI, and full test coverage.
+**Goal:** Rebuild finance-sim as a SvelteKit fullstack app with passkey auth, paper-trading portfolio, live and historical (instant-replay) competitions, free-tier market data (Finnhub + TwelveData), polished UI, and full test coverage.
 
 **Architecture:** Single Node 24 process (SvelteKit + adapter-node) behind nginx, talking to a local SQLite file via better-sqlite3 + Drizzle. Auth uses `@simplewebauthn` with passkey-only credentials and recovery-code fallback. External market APIs sit behind a `MarketData` interface so they can be mocked in tests.
 
@@ -24,7 +24,7 @@
 
 **No `any`.** TypeScript strict means strict. If you reach for `any`, you're missing a type.
 
-**Commit message format:** lowercase, imperative, scoped — e.g. `feat(auth): add passkey registration ceremony`, `test(market): cover stooq empty-csv parsing`, `chore(scaffold): init sveltekit project`. No "Initial commit" or "First step" framing.
+**Commit message format:** lowercase, imperative, scoped — e.g. `feat(auth): add passkey registration ceremony`, `test(market): cover twelvedata json parsing`, `chore(scaffold): init sveltekit project`. No "Initial commit" or "First step" framing.
 
 ---
 
@@ -207,7 +207,7 @@ work in progress on the `v3` branch.
 - [`docs/tech-choices.md`](./docs/tech-choices.md) — why this stack
 - [`docs/data-model.md`](./docs/data-model.md) — schema + invariants
 - [`docs/auth/`](./docs/auth/) — passkeys end-to-end
-- [`docs/market-data/`](./docs/market-data/) — finnhub + stooq + caching
+- [`docs/market-data/`](./docs/market-data/) — finnhub + twelvedata + caching
 - [`docs/competitions/`](./docs/competitions/) — live + instant-replay
 - [`docs/testing.md`](./docs/testing.md), [`docs/deployment.md`](./docs/deployment.md)
 ```
@@ -1003,7 +1003,7 @@ Implementation notes and design rationale for v3.
 ## subsystems
 
 - [`auth/`](./auth/) — passkey-only auth
-- [`market-data/`](./market-data/) — finnhub + stooq + caching
+- [`market-data/`](./market-data/) — finnhub + twelvedata + caching
 - [`competitions/`](./competitions/) — live + instant-replay
 
 ## ops
@@ -2027,77 +2027,31 @@ git commit -m "feat(market): nyse market-hours + holiday calendar"
 git push
 ```
 
-#### Task B.2: Stooq adapter
+#### Task B.2: TwelveData adapter
+
+> **Note (post-ship):** Originally planned as a Stooq adapter, but Stooq turned out to be a captcha-gated CSV download with no real API, docs, or signup. Switched to TwelveData. Task completed as `refactor(market): swap stooq for twelvedata`.
 
 **Files:**
-- Create: `src/lib/server/market/stooq.ts`, `src/lib/server/market/stooq.test.ts`, `src/lib/server/market/__fixtures__/stooq-aapl.csv`.
+- Created: `src/lib/server/market/twelvedata.ts`, `src/lib/server/market/twelvedata.test.ts`, `src/lib/server/market/__fixtures__/twelvedata-aapl.json`.
+- Deleted: `stooq.ts`, `stooq.test.ts`, `__fixtures__/stooq-aapl.csv`.
 
-- [ ] **Step 1: Capture a real fixture**
+- [x] **Step 1: Capture a real fixture**
 
-Run once during development:
+Verified live response shape from `https://api.twelvedata.com/time_series?symbol=AAPL&interval=1day&start_date=2024-01-02&end_date=2024-01-04&apikey=...`. Saved as `__fixtures__/twelvedata-aapl.json`.
 
-```bash
-curl -s "https://stooq.com/q/d/l/?s=aapl.us&d1=20240102&d2=20240105&i=d" \
-  > src/lib/server/market/__fixtures__/stooq-aapl.csv
-```
+- [x] **Step 2: Failing test** — 8 tests, import-fails on missing module.
 
-Verify it looks like `Date,Open,High,Low,Close,Volume\n2024-01-02,...`.
+- [x] **Step 3: Run, fail** — confirmed.
 
-- [ ] **Step 2: Failing test**
+- [x] **Step 4: Implement**
 
-```ts
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { StooqAdapter } from './stooq';
+TwelveData URL: `https://api.twelvedata.com/time_series?symbol={SYMBOL}&interval=1day&start_date={YYYY-MM-DD}&end_date={YYYY-MM-DD}&apikey={KEY}`. Returns JSON with `values[]` sorted descending; adapter re-sorts ascending. `close` is a string; parse with `parseFloat` then `Math.round(* 100)` for cents. `status:'error'` ⇒ return `[]`. HTTP 429 or body `code:429` ⇒ throw `RateLimitError(60)`. Missing key ⇒ return `[]` (dev convenience).
 
-const fixture = readFileSync(join(__dirname, '__fixtures__/stooq-aapl.csv'), 'utf8');
+`getLiveQuote` returns `null` — TwelveData has `/price` but we use Finnhub for live quotes.
 
-describe('StooqAdapter', () => {
-  beforeEach(() => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      new Response(fixture, { status: 200, headers: { 'content-type': 'text/csv' } })
-    );
-  });
-  afterEach(() => vi.restoreAllMocks());
+Key via `TWELVEDATA_API_KEY`.
 
-  it('parses CSV into HistoricalBars with cents', async () => {
-    const a = new StooqAdapter();
-    const bars = await a.getHistoricalCloses('AAPL', '2024-01-02', '2024-01-05');
-    expect(bars.length).toBeGreaterThan(0);
-    expect(bars[0]?.closeCents).toBeGreaterThan(0);
-    expect(bars[0]?.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-  });
-
-  it('returns empty for unknown symbol (empty CSV body)', async () => {
-    vi.mocked(fetch).mockResolvedValueOnce(new Response('', { status: 200 }));
-    const a = new StooqAdapter();
-    expect(await a.getHistoricalCloses('NOPE', '2024-01-02', '2024-01-05')).toEqual([]);
-  });
-
-  it('getCloseAt returns just one date', async () => {
-    const a = new StooqAdapter();
-    expect(await a.getCloseAt('AAPL', '2024-01-02')).toBeGreaterThan(0);
-  });
-});
-```
-
-- [ ] **Step 3: Run, fail**
-
-- [ ] **Step 4: Implement**
-
-Stooq URL: `https://stooq.com/q/d/l/?s={symbol_lower}.us&d1=YYYYMMDD&d2=YYYYMMDD&i=d`. Body is `Date,Open,High,Low,Close,Volume\n...`. An unknown symbol returns an empty body or a header-only body. Convert `Close` (a decimal string like `185.32`) to cents via `Math.round(parseFloat(...) * 100)`. Validate symbols before fetch.
-
-`getLiveQuote` is unimplemented for Stooq — it throws `new Error('stooq does not provide live quotes')` (we use Finnhub for live). Or, alternately, return `null` to keep the interface clean. Pick `null` — it makes composition easier.
-
-- [ ] **Step 5: Verify, commit**
-
-```bash
-pnpm test --run src/lib/server/market/stooq.test.ts
-git add -A
-git commit -m "feat(market): stooq historical adapter with csv parsing"
-git push
-```
+- [x] **Step 5: Verify, commit** — `refactor(market): swap stooq for twelvedata (real api with docs)`
 
 #### Task B.3: Finnhub adapter
 
@@ -2167,7 +2121,7 @@ describe('FinnhubAdapter', () => {
 
 Standard `fetch` of `https://finnhub.io/api/v1/quote?symbol={SYMBOL}&token={KEY}`. Map `c` (current price) — if `0`, return null (Finnhub's "symbol not found" signal). Use a `Map<string, Promise<Quote|null>>` for in-flight coalescing.
 
-`getHistoricalCloses` and `getCloseAt` return `null`/`[]` (Finnhub's free tier doesn't grant /candle access reliably; we use Stooq for historical regardless).
+`getHistoricalCloses` and `getCloseAt` return `null`/`[]` (Finnhub's free tier doesn't grant /candle access reliably; we use TwelveData for historical regardless).
 
 - [ ] **Step 4: Verify, commit**
 
@@ -2198,7 +2152,7 @@ Pure DB-touching functions; no HTTP. Use `isMarketOpen` from market-hours.
 
 - [ ] **Step 3: Service failing test**
 
-`service.test.ts` covers a `MarketDataService` that takes a `live: MarketData` (Finnhub) and `historical: MarketData` (Stooq) and a `db`, exposing the unified `MarketData` interface:
+`service.test.ts` covers a `MarketDataService` that takes a `live: MarketData` (Finnhub) and `historical: MarketData` (TwelveData) and a `db`, exposing the unified `MarketData` interface:
 - `getLiveQuote` → cache hit short-circuits; cache miss calls live, writes to cache, returns
 - `getCloseAt('AAPL', today)` → falls through to live quote
 - `getCloseAt('AAPL', pastDate)` → cache hit short-circuits; miss calls historical, writes to cache, returns
@@ -2213,7 +2167,7 @@ Composes the above. ~120 lines.
 ```bash
 pnpm test --run src/lib/server/market
 git add -A
-git commit -m "feat(market): cache + composite service unifying finnhub and stooq"
+git commit -m "feat(market): cache + composite service unifying finnhub and twelvedata"
 git push
 ```
 
@@ -2224,7 +2178,7 @@ git push
 
 - [ ] **Step 1: `api-comparison.md`**
 
-Table of free-tier APIs considered (Finnhub, Stooq, Alpha Vantage, Twelve Data, Polygon, yfinance) with: rate limits, data range, key required, reliability notes, why we picked / didn't pick. ~120 lines.
+Table of free-tier APIs considered (Finnhub, TwelveData, Alpha Vantage, Stooq, Polygon, yfinance) with: rate limits, data range, key required, reliability notes, why we picked / didn't pick. ~120 lines. Note: Stooq was initially chosen but dropped — captcha-gated CSV, not a real API.
 
 - [ ] **Step 2: `caching-strategy.md`**
 
@@ -2858,10 +2812,10 @@ DATABASE_URL=./finance.db
 # auth
 RP_ID=finance.gabbrousset.dev
 ORIGIN=https://finance.gabbrousset.dev
-SESSION_SECRET=replace-me-with-32-bytes-of-base64
 
 # market data
 FINNHUB_API_KEY=replace-me
+TWELVEDATA_API_KEY=replace-me
 
 # port (matches nginx upstream)
 PORT=3002
@@ -3020,6 +2974,6 @@ git push
 
 **Placeholder scan:** none of "TBD", "TODO", "implement later", "add validation", or "similar to Task N" remain. Every code-bearing step has actual code.
 
-**Type consistency:** `MarketData` interface stable across mock, finnhub, stooq, cache, service. `RpConfig` fields (`rpId`, `rpName`, `expectedOrigin`) consistent across `webauthn.ts` and `service.ts`. `CreatedSession`, `ResolvedSession` shapes consistent in `sessions.ts` and consumers.
+**Type consistency:** `MarketData` interface stable across mock, finnhub, twelvedata, cache, service. `RpConfig` fields (`rpId`, `rpName`, `expectedOrigin`) consistent across `webauthn.ts` and `service.ts`. `CreatedSession`, `ResolvedSession` shapes consistent in `sessions.ts` and consumers.
 
 **Scope:** everything fits a single plan. Phases are clean dependency layers.

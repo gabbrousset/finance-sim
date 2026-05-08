@@ -11,7 +11,7 @@ Implementation notes and design rationale for v3.
 ## subsystems
 
 - [`auth/`](./auth/) — passkey-only auth
-- [`market-data/`](./market-data/) — finnhub + stooq + caching
+- [`market-data/`](./market-data/) — finnhub + twelvedata + caching
 - [`competitions/`](./competitions/) — live + instant-replay
 
 ## ops
