@@ -17,13 +17,12 @@
         optionsJSON: options as Parameters<typeof startAuthentication>[0]['optionsJSON'],
         useBrowserAutofill: false
       });
+      const formData = new FormData();
+      formData.append('assertion', JSON.stringify(assertion));
       const res = await fetch('/signin?/complete', {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-sveltekit-action': 'true'
-        },
-        body: JSON.stringify({ assertion })
+        headers: { 'x-sveltekit-action': 'true' },
+        body: formData
       });
       const result = deserialize(await res.text());
       if (result.type === 'success') {

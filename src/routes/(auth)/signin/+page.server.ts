@@ -37,14 +37,22 @@ export const actions: Actions = {
   complete: async ({ request, cookies }) => {
     const cookie = cookies.get('signin_challenge');
     if (!cookie) return fail(400, { error: 'missing or expired challenge' });
-    const body = await request.json();
+    const form = await request.formData();
+    const assertionStr = String(form.get('assertion') ?? '');
+    if (!assertionStr) return fail(400, { error: 'missing assertion' });
+    let assertion;
+    try {
+      assertion = JSON.parse(assertionStr);
+    } catch {
+      return fail(400, { error: 'malformed assertion' });
+    }
     const db = getDb();
     try {
       const result = await auth.completeSignin(
         db,
         rp,
         cookie,
-        body.assertion,
+        assertion,
         request.headers.get('user-agent') ?? ''
       );
       cookies.delete('signin_challenge', { path: '/' });

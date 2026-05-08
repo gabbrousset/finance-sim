@@ -49,10 +49,18 @@ export const actions: Actions = {
   complete: async ({ request, cookies }) => {
     const challengeCookie = cookies.get('signup_challenge');
     if (!challengeCookie) return fail(400, { error: 'missing or expired challenge' });
-    const body = await request.json();
+    const form = await request.formData();
+    const attestationStr = String(form.get('attestation') ?? '');
+    if (!attestationStr) return fail(400, { error: 'missing attestation' });
+    let attestation;
+    try {
+      attestation = JSON.parse(attestationStr);
+    } catch {
+      return fail(400, { error: 'malformed attestation' });
+    }
     const db = getDb();
     try {
-      const result = await auth.completeSignup(db, rp, challengeCookie, body.attestation);
+      const result = await auth.completeSignup(db, rp, challengeCookie, attestation);
       cookies.delete('signup_challenge', { path: '/' });
       cookies.set('session', result.sessionCookieValue, {
         path: '/',

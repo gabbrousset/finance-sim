@@ -58,7 +58,15 @@ export const actions: Actions = {
     if (!locals.user) return fail(401, { error: 'unauthorized' });
     const cookie = cookies.get('add_passkey_challenge');
     if (!cookie) return fail(400, { error: 'missing or expired challenge' });
-    const body = await request.json();
+    const form = await request.formData();
+    const attestationStr = String(form.get('attestation') ?? '');
+    if (!attestationStr) return fail(400, { error: 'missing attestation' });
+    let attestation;
+    try {
+      attestation = JSON.parse(attestationStr);
+    } catch {
+      return fail(400, { error: 'malformed attestation' });
+    }
     const db = getDb();
     try {
       const { passkeyId } = await authService.completeAddPasskey(
@@ -66,7 +74,7 @@ export const actions: Actions = {
         rp,
         locals.user.id,
         cookie,
-        body.attestation
+        attestation
       );
       cookies.delete('add_passkey_challenge', { path: '/' });
       cookies.delete('force_passkey_setup', { path: '/' });

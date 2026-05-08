@@ -20,13 +20,12 @@
       const attestation = await startRegistration({
         optionsJSON: options as Parameters<typeof startRegistration>[0]['optionsJSON']
       });
+      const formData = new FormData();
+      formData.append('attestation', JSON.stringify(attestation));
       const res = await fetch('/settings/passkeys?/completeAdd', {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-sveltekit-action': 'true'
-        },
-        body: JSON.stringify({ attestation })
+        headers: { 'x-sveltekit-action': 'true' },
+        body: formData
       });
       const result = deserialize(await res.text());
       if (result.type === 'success') {
