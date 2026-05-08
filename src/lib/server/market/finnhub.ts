@@ -57,7 +57,7 @@ export class FinnhubAdapter implements MarketData {
   }
 
   async getHistoricalCloses(_symbol: string, _from: string, _to: string): Promise<HistoricalBar[]> {
-    // Finnhub free tier doesn't grant reliable /candle access; use Stooq for historical data.
+    // Finnhub free tier doesn't grant reliable /candle access; use TwelveData for historical data.
     return [];
   }
 

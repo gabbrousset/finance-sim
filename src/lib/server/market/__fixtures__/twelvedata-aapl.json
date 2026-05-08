@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "symbol": "AAPL",
+    "interval": "1day",
+    "currency": "USD",
+    "exchange_timezone": "America/New_York",
+    "exchange": "NASDAQ",
+    "mic_code": "XNGS",
+    "type": "Common Stock"
+  },
+  "values": [
+    {"datetime":"2024-01-04","open":"182.14999","high":"183.089996","low":"180.88000","close":"181.91000","volume":"71983600"},
+    {"datetime":"2024-01-03","open":"184.22000","high":"185.88000","low":"183.42999","close":"184.25","volume":"58414500"},
+    {"datetime":"2024-01-02","open":"187.14999","high":"188.44000","low":"183.89000","close":"185.64000","volume":"82488700"}
+  ],
+  "status": "ok"
+}
