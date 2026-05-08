@@ -7,6 +7,7 @@
 //
 // Set MARKET_DATA=mock in .env.local for keyless local dev.
 
+import { existsSync, readFileSync } from 'node:fs';
 import { env } from '$env/dynamic/private';
 import { MarketDataService } from './service';
 import { FinnhubAdapter } from './finnhub';
@@ -23,10 +24,8 @@ export function getMarketData(): MarketData {
     const mock = new MockMarketData();
     const seedPath = env.MARKET_SEED_PATH ?? './e2e/fixtures/market-seed.json';
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const fs = require('node:fs') as typeof import('node:fs');
-      if (fs.existsSync(seedPath)) {
-        const seed = JSON.parse(fs.readFileSync(seedPath, 'utf8')) as {
+      if (existsSync(seedPath)) {
+        const seed = JSON.parse(readFileSync(seedPath, 'utf8')) as {
           live?: Record<string, number>;
           historical?: Record<string, Record<string, number>>;
         };
