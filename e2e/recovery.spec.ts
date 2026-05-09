@@ -9,6 +9,7 @@ test('recovery flow: signup → capture code → sign out → recover → passke
 	const username = uniqueUsername('bob');
 
 	// Sign up.
+	await context.clearCookies();
 	await page.goto('/signup');
 	await enableVirtualAuthenticator(context, page);
 

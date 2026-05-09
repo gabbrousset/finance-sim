@@ -14,6 +14,7 @@ test('historical competition: create → trade at start price → resolve → le
 	const username = uniqueUsername('hist');
 
 	// Sign up.
+	await context.clearCookies();
 	await page.goto('/signup');
 	await enableVirtualAuthenticator(context, page);
 	await page.fill('input[name="username"]', username);
@@ -34,11 +35,9 @@ test('historical competition: create → trade at start price → resolve → le
 
 	await expect(page).toHaveURL(/\/competitions\/[a-z0-9]+$/, { timeout: 10_000 });
 
-	// Competition should be open.
-	await expect(page.getByText('open')).toBeVisible({ timeout: 5_000 });
-
-	// Trade section is visible for open historical competitions.
-	const tradeSection = page.locator('section').filter({ hasText: /^trade/ });
+	// Trade section only renders for canTrade comps (open historical OR running live).
+	// Its presence implies the comp is in 'open' status for a historical comp.
+	const tradeSection = page.locator('section.trade');
 	await expect(tradeSection).toBeVisible({ timeout: 5_000 });
 
 	// Buy 10 AAPL — historical mode uses the start-date close (2024-01-02 = $185.00).
@@ -47,16 +46,19 @@ test('historical competition: create → trade at start price → resolve → le
 	await tradeSection.locator('button[type="submit"]').click();
 
 	// The competition trade action calls invalidateAll() after success, clearing form state.
-	// Assert on the cash update instead: $10,000 - 10 * $185 = $8,150.
-	await expect(page.getByText('$8,150.00')).toBeVisible({ timeout: 10_000 });
+	// Assert on the cash update: $10,000 - 10 * $185 = $8,150.
+	// $8,150.00 appears in two places (the My Positions SectionHead meta and the
+	// OrderTicket's Cash row); scope to the my-positions section's header meta.
+	await expect(page.locator('section.my .meta').first()).toContainText('$8,150.00', { timeout: 10_000 });
 
 	// Resolve (host-only button in host controls section).
-	const hostSection = page.locator('section').filter({ hasText: 'host controls' });
+	const hostSection = page.locator('section.host-controls');
 	await hostSection.getByRole('button', { name: 'resolve now' }).click();
 
-	// After resolve, status changes to "finished".
-	await expect(page.getByText('finished')).toBeVisible({ timeout: 10_000 });
+	// After resolve, the status stamp flips from "Provisional" to "Final".
+	await expect(page.getByText('Final')).toBeVisible({ timeout: 10_000 });
 
-	// Leaderboard shows ~5.50% return.
-	await expect(page.getByText(/5\.5/)).toBeVisible({ timeout: 5_000 });
+	// Leaderboard shows ~5.50% return. The figure renders in both the
+	// PullQuote and the standings table cell; either is fine to assert on.
+	await expect(page.getByText(/5\.5/).first()).toBeVisible({ timeout: 5_000 });
 });

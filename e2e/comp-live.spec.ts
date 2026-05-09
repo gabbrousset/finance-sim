@@ -11,6 +11,9 @@ async function signupUser(
 	context: import('@playwright/test').BrowserContext,
 	username: string
 ) {
+	// Defensive: clear any leaked cookies from prior tests so /signup
+	// doesn't redirect to /portfolio for a stale session.
+	await context.clearCookies();
 	await page.goto('/signup');
 	await enableVirtualAuthenticator(context, page);
 	await page.fill('input[name="username"]', username);
@@ -43,11 +46,12 @@ test('live competition: create → second user joins → both appear on leaderbo
 	// Redirects to competition detail page.
 	await expect(page).toHaveURL(/\/competitions\/[a-z0-9]+$/, { timeout: 10_000 });
 
-	// Extract invite code — shown as `code <span class="font-mono">XXXX</span>` in the subtitle.
-	// Grab the font-mono span in the header subtitle (not the leaderboard).
-	const inviteCodeEl = page.locator('header .font-mono');
-	await expect(inviteCodeEl).toBeVisible({ timeout: 5_000 });
-	const inviteCode = (await inviteCodeEl.textContent())?.trim() ?? '';
+	// Extract invite code — rendered in the SectionHead's `.meta` span as
+	// e.g. "live · code ABCD2345". Match the first .meta containing "code".
+	const metaEl = page.locator('.meta').filter({ hasText: /code/ }).first();
+	await expect(metaEl).toBeVisible({ timeout: 5_000 });
+	const metaText = (await metaEl.textContent())?.trim() ?? '';
+	const inviteCode = metaText.match(/code\s+(\S+)/)?.[1] ?? '';
 	expect(inviteCode.length).toBeGreaterThan(0);
 
 	// Sign up second user in a fresh browser context.
@@ -58,7 +62,8 @@ test('live competition: create → second user joins → both appear on leaderbo
 
 	// Join via invite code.
 	await page2.goto(`/competitions/join/${inviteCode}`);
-	await expect(page2.getByText('join competition')).toBeVisible({ timeout: 5_000 });
+	// Join page shows a SectionHead titled "Join: <comp name>".
+	await expect(page2.getByText('Live Test Comp')).toBeVisible({ timeout: 5_000 });
 	await page2.locator('main button[type="submit"]').click();
 
 	// Should redirect to the competition detail page.

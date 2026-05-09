@@ -1,18 +1,17 @@
 <script lang="ts">
 	import { mode, setMode } from 'mode-watcher';
-	import { Sun, Moon, Monitor } from 'lucide-svelte';
+	import { Sun, Moon } from 'lucide-svelte';
 
-	function cycle() {
-		if (mode.current === 'light') setMode('dark');
-		else if (mode.current === 'dark') setMode('system');
-		else setMode('light');
+	// Binary toggle: light ↔ dark. Initial paint follows OS prefs via
+	// mode-watcher; explicit toggle from there is binary.
+	function toggle() {
+		setMode(mode.current === 'dark' ? 'light' : 'dark');
 	}
 </script>
 
-<button onclick={cycle} class="tt" aria-label="toggle theme">
-	{#if mode.current === 'light'}<Sun class="ico" />
-	{:else if mode.current === 'dark'}<Moon class="ico" />
-	{:else}<Monitor class="ico" />
+<button onclick={toggle} class="tt" aria-label="toggle theme">
+	{#if mode.current === 'dark'}<Sun class="ico" />
+	{:else}<Moon class="ico" />
 	{/if}
 </button>
 

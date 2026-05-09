@@ -9,6 +9,7 @@ test('signup → trade → portfolio → sell', async ({ page, context }) => {
 	const username = uniqueUsername('alice');
 
 	// Enable virtual authenticator on this page before any WebAuthn call.
+	await context.clearCookies();
 	await page.goto('/signup');
 	await enableVirtualAuthenticator(context, page);
 
