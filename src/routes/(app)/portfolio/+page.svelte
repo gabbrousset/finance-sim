@@ -2,25 +2,26 @@
   import { formatUsd } from '$lib/shared/money';
   import EquityCurveChart from '$lib/components/charts/EquityCurve.svelte';
   import Sparkline from '$lib/components/charts/Sparkline.svelte';
+  import Masthead from '$lib/components/marks/Masthead.svelte';
+  import SectionHead from '$lib/components/marks/SectionHead.svelte';
+  import StatBlock from '$lib/components/marks/StatBlock.svelte';
   import DataTable from '$lib/components/tables/DataTable.svelte';
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
 
-  // Fetch sparkline data for each holding lazily after mount.
   let sparklines = $state<Record<string, { closes: number[]; dates: string[] }>>({});
   onMount(async () => {
     for (const h of data.holdings) {
       const res = await fetch(`/api/sparkline/${h.symbol}`);
       if (res.ok) {
-        const json = await res.json();
-        sparklines[h.symbol] = { closes: json.closes, dates: json.dates };
+        const j = await res.json();
+        sparklines[h.symbol] = { closes: j.closes, dates: j.dates };
       }
     }
   });
 
-  // Format holdings for the table.
   let rows = $derived(
     data.holdings.map((h) => ({
       symbol: h.symbol,
@@ -29,62 +30,75 @@
       value: formatUsd(h.valueCents)
     }))
   );
+
+  const stats = $derived([
+    { label: 'Cash on hand', value: formatUsd(data.cashCents) },
+    { label: 'Holdings, mkt.', value: formatUsd(data.totalCents - data.cashCents) },
+    { label: 'Account total', value: formatUsd(data.totalCents) }
+  ]);
+
+  const editionNo = $derived(((data as unknown) as { editionNo?: number }).editionNo ?? 1);
 </script>
 
-<div class="p-6">
-  <h1 class="text-2xl font-semibold">portfolio</h1>
+<Masthead {editionNo} date={new Date()} />
 
-  <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3">
-    <div class="rounded-md border border-zinc-200 p-4 dark:border-zinc-800">
-      <div class="text-xs text-zinc-500">cash</div>
-      <div class="mono tabular mt-1 text-2xl">{formatUsd(data.cashCents)}</div>
-    </div>
-    <div class="rounded-md border border-zinc-200 p-4 dark:border-zinc-800">
-      <div class="text-xs text-zinc-500">holdings value</div>
-      <div class="mono tabular mt-1 text-2xl">{formatUsd(data.totalCents - data.cashCents)}</div>
-    </div>
-    <div class="col-span-2 rounded-md border border-zinc-200 p-4 md:col-span-1 dark:border-zinc-800">
-      <div class="text-xs text-zinc-500">total</div>
-      <div class="mono tabular mt-1 text-2xl">{formatUsd(data.totalCents)}</div>
-    </div>
-  </div>
+<SectionHead eyebrow="I — Portfolio" title="The Portfolio." meta="As of close" />
 
-  <div class="mt-8">
-    <h2 class="text-sm font-medium text-zinc-500">last 30 days</h2>
-    <div class="mt-2">
-      <EquityCurveChart series={data.curve} />
-    </div>
-  </div>
+<StatBlock {stats} />
 
-  <div class="mt-8">
-    <h2 class="text-sm font-medium text-zinc-500">holdings</h2>
-    {#if data.holdings.length === 0}
-      <p class="mt-4 text-zinc-500">no holdings yet — <a href="/trade" class="underline">trade</a></p>
-    {:else}
-      <div class="mt-2">
-        <DataTable
-          columns={[
-            { key: 'symbol', label: 'symbol' },
-            { key: 'shares', label: 'shares', tabular: true },
-            { key: 'price', label: 'price', tabular: true },
-            { key: 'value', label: 'value', tabular: true }
-          ]}
-          {rows}
-        />
+<EquityCurveChart series={data.curve} />
+
+<SectionHead title="Holdings." meta={`${data.holdings.length} ${data.holdings.length === 1 ? 'position' : 'positions'}`} />
+
+{#if data.holdings.length === 0}
+  <p class="empty"><em>No holdings yet —</em> <a href="/trade">trade</a>.</p>
+{:else}
+  <DataTable
+    columns={[
+      { key: 'symbol', label: 'Symbol' },
+      { key: 'shares', label: 'Shares', tabular: true },
+      { key: 'price',  label: 'Last',   tabular: true },
+      { key: 'value',  label: 'Position', tabular: true }
+    ]}
+    {rows}
+  />
+
+  <div class="sparks">
+    {#each data.holdings as h}
+      {@const sp = sparklines[h.symbol]}
+      <div class="sparks__item">
+        <span class="sym">{h.symbol}</span>
+        {#if sp}
+          <Sparkline data={sp.closes} dates={sp.dates} width={140} height={32} />
+        {/if}
       </div>
-      <div class="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-        {#each data.holdings as h}
-          {@const spark = sparklines[h.symbol]}
-          <div class="rounded-md border border-zinc-200 p-3 dark:border-zinc-800">
-            <div class="text-xs text-zinc-500">{h.symbol}</div>
-            {#if spark}
-              <Sparkline data={spark.closes} dates={spark.dates} />
-            {:else}
-              <div class="mt-1 h-5 w-20 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></div>
-            {/if}
-          </div>
-        {/each}
-      </div>
-    {/if}
+    {/each}
   </div>
-</div>
+{/if}
+
+<style>
+  .empty {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--color-ink-2);
+  }
+  .empty a { color: var(--color-ink); border-bottom: 1px solid var(--color-rule); }
+  .sparks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .sparks__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--color-rule-soft);
+    padding-top: 8px;
+  }
+  .sym {
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 24, 'wght' 600;
+    font-size: 16px;
+  }
+</style>
