@@ -28,7 +28,7 @@
 	</main>
 
 	<footer class="foot">
-		Set in Fraunces, Newsreader &amp; JetBrains Mono · est. MMXXVI
+		Set in Fraunces, Newsreader &amp; JetBrains Mono · est. MMXXI
 	</footer>
 </div>
 

@@ -14,7 +14,7 @@
 <header class="mh">
   <div class="mh__side">
     Volume III · No. {editionNo}<br/>
-    Established MMXXVI
+    Established MMXXI
   </div>
   <div class="mh__center">
     <div class="mh__title">finance<span class="amp">&amp;</span>sim</div>
