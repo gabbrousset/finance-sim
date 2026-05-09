@@ -48,3 +48,6 @@ vite.config.ts.timestamp-*
 
 # brainstorming visual companion
 .superpowers/
+
+# local screenshots, not for the repo
+screenshots/
