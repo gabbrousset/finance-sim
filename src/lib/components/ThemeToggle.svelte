@@ -9,16 +9,22 @@
 	}
 </script>
 
-<button
-	onclick={cycle}
-	class="rounded-md p-2 text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-	aria-label="toggle theme"
->
-	{#if mode.current === 'light'}
-		<Sun class="h-4 w-4" />
-	{:else if mode.current === 'dark'}
-		<Moon class="h-4 w-4" />
-	{:else}
-		<Monitor class="h-4 w-4" />
+<button onclick={cycle} class="tt" aria-label="toggle theme">
+	{#if mode.current === 'light'}<Sun class="ico" />
+	{:else if mode.current === 'dark'}<Moon class="ico" />
+	{:else}<Monitor class="ico" />
 	{/if}
 </button>
+
+<style>
+	.tt {
+		background: transparent;
+		border: 0;
+		padding: 6px;
+		color: var(--color-ink-2);
+		cursor: pointer;
+		transition: color 0.15s;
+	}
+	.tt:hover { color: var(--color-ink); }
+	:global(.tt .ico) { width: 16px; height: 16px; }
+</style>

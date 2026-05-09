@@ -5,65 +5,159 @@
 
 	let {
 		navItems,
-		user
+		user,
+		editionNo = 1
 	}: {
 		navItems: { href: string; label: string; icon: ComponentType<SvelteComponent> }[];
 		user: { id: string; username: string; displayName: string } | null;
+		editionNo?: number;
 	} = $props();
 
 	function isActive(href: string): boolean {
 		return page.url.pathname === href || page.url.pathname.startsWith(href + '/');
 	}
+
+	const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 </script>
 
-<aside
-	class="fixed inset-y-0 left-0 z-10 hidden w-56 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 md:flex"
->
-	<!-- Brand wordmark -->
-	<div class="flex h-14 items-center px-5">
-		<span class="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-			finance-sim
-		</span>
-	</div>
+<aside class="rail">
+	<div class="rail__brand">finance<span class="amp">&amp;</span>sim</div>
+	<div class="rail__edition">Vol III · No. {editionNo}</div>
+	<hr class="rail__rule" />
 
-	<!-- Nav links -->
-	<nav class="flex-1 overflow-y-auto px-3 py-2">
-		<ul class="space-y-0.5">
-			{#each navItems as item}
+	<nav class="rail__nav">
+		<ul>
+			{#each navItems as item, i}
 				{@const active = isActive(item.href)}
-				<li>
-					<a
-						href={item.href}
-						class="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors
-							{active
-							? 'bg-zinc-100 font-medium text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100'
-							: 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-100'}"
-					>
-						<item.icon class="h-4 w-4 shrink-0" />
-						{item.label}
+				<li class:on={active}>
+					<a href={item.href}>
+						<span class="num">{ROMAN[i] ?? ''}</span>
+						<span class="lbl">{item.label}</span>
+						{#if active}<span class="dot" aria-hidden="true"></span>{/if}
 					</a>
 				</li>
 			{/each}
 		</ul>
 	</nav>
 
-	<!-- Bottom: user info + theme toggle + sign out -->
-	<div class="border-t border-zinc-200 p-3 dark:border-zinc-800">
+	<div class="rail__foot">
 		{#if user}
-			<div class="mb-2 truncate px-1 text-xs text-zinc-500 dark:text-zinc-500">
-				{user.displayName}
-			</div>
+			<div class="who">{user.displayName || user.username}</div>
 		{/if}
-		<div class="flex items-center justify-between">
+		<div class="row">
 			<ThemeToggle />
 			<form method="POST" action="/signout">
-				<button
-					type="submit"
-					class="rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-				>
-					Sign out
-				</button>
+				<button type="submit" class="signout">Sign out</button>
 			</form>
 		</div>
 	</div>
 </aside>
+
+<style>
+	.rail {
+		position: fixed;
+		inset-block: 0;
+		left: 0;
+		z-index: 10;
+		width: 220px;
+		background:
+			linear-gradient(to right, var(--color-paper-2) 0, var(--color-paper-2) 6px, transparent 6px),
+			var(--color-paper);
+		border-right: 1px solid var(--color-rule);
+		box-shadow: inset -3px 0 0 var(--color-rule-soft);
+		padding: 28px 22px 18px 24px;
+		display: none;
+		flex-direction: column;
+	}
+	@media (min-width: 768px) {
+		.rail { display: flex; }
+	}
+
+	.rail__brand {
+		font-family: var(--font-display);
+		font-variation-settings: 'opsz' 144, 'SOFT' 30, 'wght' 600;
+		font-size: 19px;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+	.amp { color: var(--color-stamp); font-style: italic; }
+	.rail__edition {
+		margin-top: 4px;
+		font-family: var(--font-mono);
+		font-size: 9.5px;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--color-ink-3);
+	}
+	.rail__rule {
+		border: 0;
+		border-top: 1px solid var(--color-rule);
+		margin: 22px 0 14px;
+	}
+
+	.rail__nav { flex: 1; }
+	.rail__nav ul { list-style: none; padding: 0; margin: 0; }
+	.rail__nav li { border-bottom: 1px dotted var(--color-rule-soft); }
+	.rail__nav a {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		font-family: var(--font-display);
+		font-variation-settings: 'opsz' 14, 'SOFT' 0, 'wght' 400;
+		font-size: 15px;
+		color: var(--color-ink-2);
+		padding: 9px 0;
+		text-decoration: none;
+	}
+	.rail__nav a:hover { color: var(--color-ink); }
+	.rail__nav li.on a {
+		color: var(--color-ink);
+		font-variation-settings: 'opsz' 14, 'SOFT' 0, 'wght' 600;
+	}
+	.rail__nav .num {
+		font-family: var(--font-mono);
+		font-size: 9px;
+		letter-spacing: 0.08em;
+		color: var(--color-ink-3);
+		width: 22px;
+		text-align: right;
+	}
+	.rail__nav li.on .num { color: var(--color-stamp); }
+	.rail__nav .dot {
+		margin-left: auto;
+		width: 5px;
+		height: 5px;
+		background: var(--color-stamp);
+		border-radius: 50%;
+		align-self: center;
+	}
+
+	.rail__foot {
+		margin-top: 14px;
+		padding-top: 14px;
+		border-top: 1px solid var(--color-rule);
+	}
+	.rail__foot .who {
+		font-family: var(--font-body);
+		font-size: 13px;
+		color: var(--color-ink);
+		margin-bottom: 6px;
+	}
+	.rail__foot .row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.signout {
+		background: transparent;
+		border: 0;
+		cursor: pointer;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--color-ink-2);
+		padding: 4px;
+	}
+	.signout:hover { color: var(--color-stamp); }
+</style>

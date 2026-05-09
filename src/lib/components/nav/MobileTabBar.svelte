@@ -2,9 +2,7 @@
 	import { page } from '$app/state';
 	import type { ComponentType, SvelteComponent } from 'svelte';
 
-	let {
-		navItems
-	}: {
+	let { navItems }: {
 		navItems: { href: string; label: string; icon: ComponentType<SvelteComponent> }[];
 	} = $props();
 
@@ -12,24 +10,49 @@
 		return page.url.pathname === href || page.url.pathname.startsWith(href + '/');
 	}
 
-	// Show only the first 5 items in the bottom bar to avoid overflow
-	const tabItems = $derived(navItems.slice(0, 5));
+	const tabs = $derived(navItems.slice(0, 5));
 </script>
 
-<nav
-	class="fixed inset-x-0 bottom-0 z-10 flex border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 md:hidden"
->
-	{#each tabItems as item}
+<nav class="tabbar">
+	{#each tabs as item}
 		{@const active = isActive(item.href)}
-		<a
-			href={item.href}
-			class="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] transition-colors
-				{active
-				? 'text-zinc-900 dark:text-zinc-100'
-				: 'text-zinc-500 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300'}"
-		>
-			<item.icon class="h-5 w-5" />
-			{item.label}
+		<a href={item.href} class:on={active}>
+			<item.icon class="ico" />
+			<span class="lbl">{item.label}</span>
 		</a>
 	{/each}
 </nav>
+
+<style>
+	.tabbar {
+		position: fixed;
+		inset-inline: 0;
+		bottom: 0;
+		z-index: 10;
+		display: flex;
+		background: var(--color-paper-2);
+		border-top: 1px solid var(--color-rule);
+	}
+	@media (min-width: 768px) {
+		.tabbar { display: none; }
+	}
+	.tabbar a {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2px;
+		padding: 8px 4px;
+		color: var(--color-ink-3);
+		text-decoration: none;
+	}
+	.tabbar a.on { color: var(--color-ink); }
+	:global(.tabbar .ico) { width: 18px; height: 18px; }
+	.tabbar .lbl {
+		font-family: var(--font-mono);
+		font-size: 9px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+	.tabbar a.on .lbl { color: var(--color-stamp); }
+</style>
