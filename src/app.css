@@ -2,13 +2,71 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+/* Fonts loaded via <link> in app.html for early head fetch */
+
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-  --color-gain: oklch(0.72 0.18 145);
-  --color-loss: oklch(0.65 0.22 25);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'Newsreader', Georgia, serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  --color-paper:         #f1e9d4;
+  --color-paper-2:       #ebe2c8;
+  --color-paper-receipt: #fbf6e6;
+  --color-ink:           #16110a;
+  --color-ink-2:         #4d4232;
+  --color-ink-3:         #8a7e66;
+  --color-rule:          #b9ad8e;
+  --color-rule-soft:     #d4c8a8;
+  --color-gain:          #305e3f;
+  --color-loss:          #8a2a2a;
+  --color-brass:         #9b7a32;
+  --color-stamp:         #973128;
 }
 
-html { font-family: var(--font-sans); font-feature-settings: 'cv11', 'ss01'; }
-.tabular { font-variant-numeric: tabular-nums; }
-.mono { font-family: var(--font-mono); }
+:where(.dark) {
+  --color-paper:         #14110b;
+  --color-paper-2:       #1c1810;
+  --color-paper-receipt: #1f1c14;
+  --color-ink:           #ede4c8;
+  --color-ink-2:         #b8ad8f;
+  --color-ink-3:         #7a6f55;
+  --color-rule:          #3a3324;
+  --color-rule-soft:     #2a2519;
+  --color-gain:          #87c19a;
+  --color-loss:          #d49693;
+  --color-brass:         #c9a25b;
+  --color-stamp:         #d49693;
+}
+
+html {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-paper);
+}
+
+body {
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.07  0 0 0 0 0.04  0 0 0 0.06 0'/></filter><rect width='240' height='240' filter='url(%23n)' opacity='0.55'/></svg>"),
+    var(--color-paper);
+  background-attachment: fixed;
+  color: var(--color-ink);
+}
+
+:where(.dark) body {
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.91  0 0 0 0 0.78  0 0 0 0.05 0'/></filter><rect width='240' height='240' filter='url(%23n)' opacity='0.45'/></svg>"),
+    var(--color-paper);
+}
+
+/* utilities */
+.tabular { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: 'tnum'; }
+.font-display { font-family: var(--font-display); }
+.font-body    { font-family: var(--font-body); }
+.font-mono    { font-family: var(--font-mono); }
+
+/* default focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+:where(.dark) *:focus-visible { outline-color: var(--color-ink-2); }
