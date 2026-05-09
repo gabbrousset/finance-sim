@@ -23,7 +23,8 @@
   --color-stamp:         #973128;
 }
 
-:where(.dark) {
+/* :root.dark beats Tailwind's :root in @theme; :where(.dark) does not. */
+:root.dark {
   --color-paper:         #14110b;
   --color-paper-2:       #1c1810;
   --color-paper-receipt: #1f1c14;
