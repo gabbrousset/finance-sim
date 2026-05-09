@@ -31,7 +31,7 @@
     {#if (form as { ok?: boolean } | null)?.ok}
       <p class="text-sm text-green-600 dark:text-green-400">display name updated</p>
     {/if}
-    <Button type="submit" variant="primary" size="sm">save</Button>
+    <Button type="submit" variant="primary">save</Button>
   </form>
 </section>
 

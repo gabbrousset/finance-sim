@@ -126,7 +126,7 @@
 					name="value"
 					value={data.dashboard.competition.shareResults ? '0' : '1'}
 				/>
-				<Button type="submit" variant="secondary">
+				<Button type="submit" variant="quiet">
 					{data.dashboard.competition.shareResults ? 'unshare results' : 'share results publicly'}
 				</Button>
 			</form>

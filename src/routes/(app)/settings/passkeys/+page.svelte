@@ -157,8 +157,8 @@
                   >
                     <input type="hidden" name="passkeyId" value={pk.id} />
                     <TextField name="deviceName" label="" bind:value={editingName} />
-                    <Button type="submit" variant="primary" size="sm">save</Button>
-                    <Button type="button" variant="ghost" size="sm" onclick={cancelRename}>
+                    <Button type="submit" variant="primary">save</Button>
+                    <Button type="button" variant="quiet" onclick={cancelRename}>
                       cancel
                     </Button>
                   </form>
@@ -196,8 +196,8 @@
                   {#if editingId !== pk.id}
                     <Button
                       type="button"
-                      variant="ghost"
-                      size="sm"
+                      variant="quiet"
+                     
                       onclick={() => startRename(pk.id, pk.deviceName)}
                     >
                       rename
@@ -224,7 +224,7 @@
                     }}
                   >
                     <input type="hidden" name="passkeyId" value={pk.id} />
-                    <Button type="submit" variant="danger" size="sm">revoke</Button>
+                    <Button type="submit" variant="danger">revoke</Button>
                   </form>
                 </div>
               </td>
@@ -246,8 +246,8 @@
     <p class="text-sm text-green-600 dark:text-green-400">passkey added successfully.</p>
     <Button
       type="button"
-      variant="ghost"
-      size="sm"
+      variant="quiet"
+     
       class="mt-2"
       onclick={() => {
         addStage = 'idle';
@@ -277,7 +277,7 @@
       }}
       class="mt-2"
     >
-      <Button type="submit" variant="secondary">add a passkey on this device</Button>
+      <Button type="submit" variant="quiet">add a passkey on this device</Button>
     </form>
   {/if}
 </section>
@@ -294,10 +294,10 @@
       class="rounded-md bg-zinc-50 p-4 font-mono text-sm dark:bg-zinc-900"
     >{recoveryCodes.join('\n')}</pre>
     <div class="mt-2 flex gap-2">
-      <Button variant="ghost" size="sm" onclick={copyRecoveryCodes}>
+      <Button variant="quiet" onclick={copyRecoveryCodes}>
         <Copy class="mr-1 inline h-4 w-4" />copy
       </Button>
-      <Button variant="ghost" size="sm" onclick={downloadRecoveryCodes}>
+      <Button variant="quiet" onclick={downloadRecoveryCodes}>
         <Download class="mr-1 inline h-4 w-4" />download
       </Button>
     </div>
@@ -307,7 +307,7 @@
     </label>
     <Button
       variant="primary"
-      size="sm"
+     
       disabled={!codesSaved}
       onclick={() => {
         codesStage = 'idle';
@@ -334,12 +334,12 @@
           };
         }}
       >
-        <Button type="submit" variant="danger" size="sm">yes, regenerate</Button>
+        <Button type="submit" variant="danger">yes, regenerate</Button>
       </form>
       <Button
         type="button"
-        variant="ghost"
-        size="sm"
+        variant="quiet"
+       
         onclick={() => {
           codesStage = 'idle';
         }}
@@ -353,8 +353,8 @@
     </p>
     <Button
       type="button"
-      variant="secondary"
-      size="sm"
+      variant="quiet"
+     
       onclick={() => {
         codesStage = 'confirm';
       }}

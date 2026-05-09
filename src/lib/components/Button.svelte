@@ -2,46 +2,69 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 
-	type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
-	type Size = 'sm' | 'md' | 'lg';
-
+	type Variant = 'primary' | 'quiet' | 'danger';
 	type Props = HTMLButtonAttributes & {
 		variant?: Variant;
-		size?: Size;
 		children: Snippet;
 	};
 
 	let {
 		variant = 'primary',
-		size = 'md',
 		type = 'button',
 		disabled = false,
 		children,
 		class: cls,
 		...rest
 	}: Props = $props();
-
-	const base =
-		'inline-flex items-center justify-center font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
-
-	const variants: Record<Variant, string> = {
-		primary:
-			'bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100',
-		secondary:
-			'border border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800',
-		ghost: 'hover:bg-zinc-100 dark:hover:bg-zinc-800',
-		danger: 'bg-red-600 text-white hover:bg-red-700'
-	};
-
-	const sizes: Record<Size, string> = {
-		sm: 'h-8 px-3 text-sm',
-		md: 'h-10 px-4 text-sm',
-		lg: 'h-11 px-5'
-	};
-
-	const classes = $derived([base, variants[variant], sizes[size], cls].filter(Boolean).join(' '));
 </script>
 
-<button {type} {disabled} class={classes} {...rest}>
+<button {type} {disabled} class="btn btn--{variant} {cls ?? ''}" {...rest}>
 	{@render children()}
 </button>
+
+<style>
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--font-display);
+		font-variation-settings: 'opsz' 24, 'wght' 600;
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		font-size: 12px;
+		padding: 10px 18px;
+		cursor: pointer;
+		transition: opacity 0.15s, background-color 0.15s;
+		border: 0;
+		border-radius: 2px;
+	}
+	.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+	.btn--primary {
+		background: var(--color-ink);
+		color: var(--color-paper-receipt);
+	}
+	.btn--primary:hover:not(:disabled) { opacity: 0.88; }
+
+	.btn--quiet {
+		background: transparent;
+		color: var(--color-ink);
+		text-decoration: underline;
+		text-underline-offset: 4px;
+		text-decoration-thickness: 1px;
+		letter-spacing: 0;
+		text-transform: none;
+		font-family: var(--font-body);
+		font-style: italic;
+		font-variation-settings: initial;
+		padding: 4px 2px;
+		font-size: 14px;
+	}
+	.btn--quiet:hover:not(:disabled) { color: var(--color-stamp); }
+
+	.btn--danger {
+		background: var(--color-ink);
+		color: var(--color-paper-receipt);
+		box-shadow: inset 0 0 0 1.5px var(--color-loss);
+	}
+</style>

@@ -103,10 +103,10 @@
     class="mt-4 rounded-md bg-zinc-50 p-4 font-mono text-sm dark:bg-zinc-900"
   >{recoveryCodes.join('\n')}</pre>
   <div class="mt-2 flex gap-2">
-    <Button variant="ghost" onclick={copy}>
+    <Button variant="quiet" onclick={copy}>
       <Copy class="mr-1 inline h-4 w-4" />copy
     </Button>
-    <Button variant="ghost" onclick={download}>
+    <Button variant="quiet" onclick={download}>
       <Download class="mr-1 inline h-4 w-4" />download
     </Button>
   </div>
