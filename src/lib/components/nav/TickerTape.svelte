@@ -43,8 +43,8 @@
     animation: ticker 80s linear infinite;
   }
   .cell { padding: 0 1.4em; opacity: 0.85; }
-  .up { color: #87c19a; }
-  .dn { color: #d49693; }
+  .up { color: var(--color-ticker-up); }
+  .dn { color: var(--color-ticker-dn); }
   .div { color: var(--color-brass); padding: 0 0.3em; }
   @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   @media (prefers-reduced-motion: reduce) {
