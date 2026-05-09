@@ -6,6 +6,7 @@
 		label: string;
 		value?: string;
 		error?: string;
+		hint?: string;
 	};
 
 	let {
@@ -15,30 +16,72 @@
 		type = 'text',
 		placeholder,
 		error,
+		hint,
 		disabled,
 		...rest
 	}: Props = $props();
 </script>
 
-<div class="flex flex-col gap-1">
-	<label for={name} class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-		{label}
-	</label>
-	<input
-		id={name}
-		{name}
-		{type}
-		{placeholder}
-		{disabled}
-		bind:value
-		class="rounded-md border px-3 py-2 text-sm transition-colors
-			{error
-			? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
-			: 'border-zinc-300 focus:border-zinc-500 focus:ring-zinc-500/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100'}
-			focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
-		{...rest}
-	/>
-	{#if error}
-		<p class="text-xs text-red-600 dark:text-red-400">{error}</p>
-	{/if}
+<div class="tf">
+	<label for={name} class="tf__label">{label}</label>
+	<div class="tf__row">
+		<input
+			id={name}
+			{name}
+			{type}
+			{placeholder}
+			{disabled}
+			bind:value
+			class="tf__input"
+			class:tf__input--error={!!error}
+			{...rest}
+		/>
+		{#if hint}<span class="tf__hint">{hint}</span>{/if}
+	</div>
+	{#if error}<p class="tf__error">{error}</p>{/if}
 </div>
+
+<style>
+	.tf { display: flex; flex-direction: column; gap: 4px; }
+	.tf__label {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--color-ink-3);
+	}
+	.tf__row {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		border-bottom: 1.5px solid var(--color-ink);
+		padding: 2px 0 4px;
+	}
+	.tf__row:focus-within { border-bottom-width: 2px; }
+	.tf__input {
+		flex: 1;
+		background: transparent;
+		border: 0;
+		outline: 0;
+		font-family: var(--font-display);
+		font-variation-settings: 'opsz' 24, 'wght' 500;
+		font-size: 20px;
+		letter-spacing: -0.015em;
+		color: var(--color-ink);
+		padding: 0;
+	}
+	.tf__input--error { color: var(--color-loss); }
+	.tf__input:disabled { opacity: 0.55; }
+	.tf__hint {
+		font-family: var(--font-body);
+		font-style: italic;
+		font-size: 11px;
+		color: var(--color-ink-3);
+	}
+	.tf__error {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--color-loss);
+		margin: 2px 0 0;
+	}
+</style>

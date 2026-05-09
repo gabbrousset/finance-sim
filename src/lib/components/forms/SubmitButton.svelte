@@ -13,21 +13,20 @@
 	} = $props();
 </script>
 
-<Button type="submit" disabled={disabled || loading}>
-	{#if loading}
-		<svg
-			class="mr-2 h-4 w-4 animate-spin"
-			fill="none"
-			viewBox="0 0 24 24"
-			aria-hidden="true"
-		>
-			<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-			<path
-				class="opacity-75"
-				fill="currentColor"
-				d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-			/>
-		</svg>
-	{/if}
+<Button type="submit" variant="primary" disabled={disabled || loading}>
+	{#if loading}<span class="dot"></span>{/if}
 	{@render children()}
 </Button>
+
+<style>
+	.dot {
+		display: inline-block;
+		width: 6px; height: 6px;
+		background: currentColor;
+		border-radius: 50%;
+		margin-right: 8px;
+		animation: pulse 0.9s ease-in-out infinite;
+	}
+	@keyframes pulse { 50% { opacity: 0.35; } }
+	@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+</style>
