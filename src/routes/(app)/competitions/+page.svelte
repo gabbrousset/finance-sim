@@ -2,51 +2,98 @@
 	import { toIsoDate } from '$lib/shared/dates';
 	import { formatUsd } from '$lib/shared/money';
 	import Button from '$lib/components/Button.svelte';
+	import SectionHead from '$lib/components/marks/SectionHead.svelte';
+	import Stamp from '$lib/components/marks/Stamp.svelte';
 
 	let { data } = $props();
 
-	const statusColor: Record<string, string> = {
-		open: 'bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100',
-		running: 'bg-emerald-100 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100',
-		finished: 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
-	};
+	function stampVariant(status: string): 'stamp' | 'ink' | 'muted' {
+		if (status === 'finished') return 'ink';
+		return 'stamp';
+	}
 </script>
 
-<div class="flex items-center justify-between">
-	<h1 class="text-2xl font-semibold">competitions</h1>
-	<a href="/competitions/new">
-		<Button variant="primary">create new</Button>
+<div class="head">
+	<SectionHead eyebrow="V — Competitions" title="Competitions." meta="Hosting + joined" />
+	<a href="/competitions/new" class="cta">
+		<Button variant="primary">Create new</Button>
 	</a>
 </div>
 
 {#if data.comps.length === 0}
-	<p class="mt-8 text-zinc-500">
-		no competitions yet — <a href="/competitions/new" class="underline">create one</a> or join via invite
-		link
+	<p class="empty">
+		<em>No competitions yet —</em> <a href="/competitions/new">create one</a> or join via invite link.
 	</p>
 {:else}
-	<ul class="mt-6 space-y-2">
+	<ul class="list">
 		{#each data.comps as c}
-			<a
-				href="/competitions/{c.id}"
-				class="block rounded-md border border-zinc-200 p-4 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
-			>
-				<div class="flex items-baseline justify-between">
-					<div>
-						<span class="font-medium">{c.name}</span>
-						<span class="ml-2 text-xs uppercase text-zinc-500">{c.type}</span>
-						{#if c.isHost}<span class="ml-1 text-xs text-zinc-500">· host</span>{/if}
+			<li>
+				<a href="/competitions/{c.id}">
+					<div class="row">
+						<div>
+							<div class="name">{c.name}</div>
+							<div class="meta">
+								<span class="type">{c.type}</span>
+								{#if c.isHost}<span class="host">· host</span>{/if}
+								· {toIsoDate(c.startDate)} → {toIsoDate(c.endDate)}
+								· starting {formatUsd(c.startingCashCents)}
+								· code <span class="code">{c.inviteCode}</span>
+							</div>
+						</div>
+						<Stamp label={c.status} variant={stampVariant(c.status)} size="sm" />
 					</div>
-					<span class="rounded px-2 py-0.5 text-xs font-medium {statusColor[c.status]}"
-						>{c.status}</span
-					>
-				</div>
-				<div class="mt-1 text-xs text-zinc-500">
-					{toIsoDate(c.startDate)} → {toIsoDate(c.endDate)} · starting {formatUsd(
-						c.startingCashCents
-					)} · code <span class="font-mono">{c.inviteCode}</span>
-				</div>
-			</a>
+				</a>
+			</li>
 		{/each}
 	</ul>
 {/if}
+
+<style>
+	.head {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 16px;
+	}
+	.head .cta { padding-bottom: 10px; }
+	.empty {
+		font-family: var(--font-body);
+		font-size: 15px;
+		color: var(--color-ink-2);
+	}
+	.empty a { color: var(--color-ink); border-bottom: 1px solid var(--color-rule); }
+	.list { list-style: none; padding: 0; margin: 0; }
+	.list li { border-bottom: 1px solid var(--color-rule-soft); }
+	.list a {
+		display: block;
+		text-decoration: none;
+		color: var(--color-ink);
+		padding: 16px 0;
+	}
+	.list a:hover { background: var(--color-paper-2); }
+	.row {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
+	}
+	.name {
+		font-family: var(--font-display);
+		font-variation-settings: 'opsz' 24, 'wght' 600;
+		font-size: 18px;
+		letter-spacing: -0.01em;
+	}
+	.meta {
+		margin-top: 3px;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--color-ink-3);
+		letter-spacing: 0.04em;
+	}
+	.type {
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+	}
+	.host { color: var(--color-ink-2); }
+	.code { color: var(--color-ink-2); }
+</style>
