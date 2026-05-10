@@ -17,7 +17,7 @@
     Established MMXXI
   </div>
   <div class="mh__center">
-    <div class="mh__title">finance<span class="amp">&amp;</span>sim</div>
+    <div class="mh__title">Curb <span class="amp">&amp;</span> Co.</div>
     <div class="mh__sub">A daily ledger of paper positions, plainly kept.</div>
   </div>
   <div class="mh__side mh__side--r">
@@ -58,7 +58,6 @@
   }
   .amp {
     color: var(--color-stamp);
-    font-style: italic;
     font-variation-settings: 'opsz' 144, 'SOFT' 100, 'wght' 400;
   }
   .mh__sub {

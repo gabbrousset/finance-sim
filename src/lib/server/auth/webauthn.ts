@@ -16,7 +16,7 @@ export interface RpConfig {
 export function rpConfig(input: { rpId: string; origin: string; rpName?: string }): RpConfig {
   return {
     rpId: input.rpId,
-    rpName: input.rpName ?? 'finance-sim',
+    rpName: input.rpName ?? 'Curb & Co.',
     expectedOrigin: input.origin
   };
 }
