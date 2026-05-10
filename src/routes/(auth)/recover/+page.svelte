@@ -8,6 +8,10 @@
 	let { form }: PageProps = $props();
 </script>
 
+<svelte:head>
+	<title>Recover · finance-sim</title>
+</svelte:head>
+
 <h1 class="auth-h">Recovery.</h1>
 <p class="auth-deck"><em>Enter your username and a recovery code to regain access.</em></p>
 

@@ -43,6 +43,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Sign in · finance-sim</title>
+</svelte:head>
+
 <h1 class="auth-h">Welcome back.</h1>
 <p class="auth-deck"><em>Sign in with your passkey.</em></p>
 

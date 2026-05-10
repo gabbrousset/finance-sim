@@ -13,6 +13,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Competitions · finance-sim</title>
+</svelte:head>
+
 <div class="head">
 	<SectionHead eyebrow="V — Competitions" title="Competitions." meta="Hosting + joined" />
 	<a href="/competitions/new" class="cta">

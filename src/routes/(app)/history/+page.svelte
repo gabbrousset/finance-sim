@@ -22,6 +22,10 @@
 	);
 </script>
 
+<svelte:head>
+	<title>Ledger · finance-sim</title>
+</svelte:head>
+
 <SectionHead
 	eyebrow="IV — Ledger"
 	title="The Ledger."

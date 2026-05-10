@@ -14,6 +14,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Join: {data.competition.name} · finance-sim</title>
+</svelte:head>
+
 <SectionHead eyebrow="Invite" title="Join: {data.competition.name}" />
 
 <div class="card">

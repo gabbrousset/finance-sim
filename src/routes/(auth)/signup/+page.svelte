@@ -62,6 +62,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Sign up · finance-sim</title>
+</svelte:head>
+
 <h1 class="auth-h">Open an account.</h1>
 <p class="auth-deck">
 	<em>No email required. You'll create a passkey and get 8 recovery codes.</em>

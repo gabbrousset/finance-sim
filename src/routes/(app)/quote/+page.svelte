@@ -40,6 +40,10 @@
 	);
 </script>
 
+<svelte:head>
+	<title>Quote · finance-sim</title>
+</svelte:head>
+
 <SectionHead eyebrow="III — Quote" title="Quote." meta="Last reported close" />
 
 <form method="POST" use:enhance class="qf">

@@ -100,6 +100,10 @@
 	let revokeError = $derived((form as { error?: string } | null)?.error ?? '');
 </script>
 
+<svelte:head>
+	<title>Passkeys · finance-sim</title>
+</svelte:head>
+
 <SectionHead
 	eyebrow="VI — Settings"
 	title="Passkeys."

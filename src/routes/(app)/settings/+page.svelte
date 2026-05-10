@@ -15,6 +15,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Settings · finance-sim</title>
+</svelte:head>
+
 <SectionHead eyebrow="VI — Settings" title="Settings." />
 
 <section class="sec">

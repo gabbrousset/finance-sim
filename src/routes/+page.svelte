@@ -3,6 +3,10 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 </script>
 
+<svelte:head>
+	<title>finance-sim · paper-trading + competitions</title>
+</svelte:head>
+
 <div class="land">
 	<header class="top">
 		<span class="brand">finance<span class="amp">&amp;</span>sim</span>
