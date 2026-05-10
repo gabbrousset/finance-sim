@@ -80,7 +80,7 @@
 		letter-spacing: -0.02em;
 		line-height: 1;
 	}
-	.amp { color: var(--color-stamp); font-style: italic; }
+	.amp { color: var(--color-stamp); }
 	.rail__edition {
 		margin-top: 4px;
 		font-family: var(--font-mono);

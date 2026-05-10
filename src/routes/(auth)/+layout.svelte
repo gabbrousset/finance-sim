@@ -36,7 +36,7 @@
 		color: var(--color-ink);
 		text-decoration: none;
 	}
-	.amp { color: var(--color-stamp); font-style: italic; }
+	.amp { color: var(--color-stamp); }
 	.card-wrap {
 		flex: 1;
 		display: grid;

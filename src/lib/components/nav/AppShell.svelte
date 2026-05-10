@@ -72,7 +72,7 @@
 		letter-spacing: -0.02em;
 		color: var(--color-ink);
 	}
-	.amp { color: var(--color-stamp); font-style: italic; }
+	.amp { color: var(--color-stamp); }
 	.row { display: flex; align-items: center; gap: 6px; }
 	.signout {
 		background: transparent;

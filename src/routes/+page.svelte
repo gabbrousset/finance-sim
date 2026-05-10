@@ -50,7 +50,7 @@
 		font-size: 18px;
 		letter-spacing: -0.02em;
 	}
-	.amp { color: var(--color-stamp); font-style: italic; }
+	.amp { color: var(--color-stamp); }
 	.row { display: flex; align-items: center; gap: 12px; }
 	.signin {
 		font-family: var(--font-mono);
