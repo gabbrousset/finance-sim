@@ -1,5 +1,11 @@
 <script lang="ts">
-	type Column = { key: string; label: string; tabular?: boolean; align?: 'left' | 'right' };
+	type Column = {
+		key: string;
+		label: string;
+		tabular?: boolean;
+		mono?: boolean;
+		align?: 'left' | 'right';
+	};
 	type Row = Record<string, unknown>;
 	let {
 		columns,
@@ -26,6 +32,7 @@
 						<td
 							class:right={c.align === 'right' || c.tabular}
 							class:tabular={c.tabular}
+							class:mono={c.mono}
 							class:cell-sym={c.key === 'symbol'}
 						>
 							{r[c.key] ?? ''}
@@ -66,6 +73,13 @@
 	.dt tbody td.tabular {
 		font-family: var(--font-mono);
 		font-variant-numeric: tabular-nums;
+	}
+	.dt tbody td.mono {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--color-ink-2);
 	}
 	.dt tbody td.cell-sym {
 		font-family: var(--font-display);

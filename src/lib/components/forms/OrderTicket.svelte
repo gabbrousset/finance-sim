@@ -53,6 +53,11 @@
 		</div>
 	</div>
 
+	<div class="ticket__balance">
+		<span class="bal-k">Balance</span>
+		<span class="bal-v">{formatUsd(cashCents)}</span>
+	</div>
+
 	<div class="ticket__toggle">
 		<button type="button" class:on={mode === 'buy'} onclick={() => onModeChange('buy')}>Buy</button>
 		<button type="button" class:on={mode === 'sell'} onclick={() => onModeChange('sell')}>Sell</button>
@@ -65,6 +70,7 @@
 			name="symbol"
 			autocomplete="off"
 			autocapitalize="characters"
+			placeholder="e.g. AAPL"
 			value={symbol}
 			oninput={(e) => onSymbolChange((e.currentTarget as HTMLInputElement).value)}
 			required
@@ -79,25 +85,27 @@
 			type="number"
 			inputmode="numeric"
 			min="1"
+			placeholder="e.g. 5"
 			value={shares}
 			oninput={(e) => onSharesChange((e.currentTarget as HTMLInputElement).value)}
 			required
 		/>
 	</div>
 
-	<div class="ticket__totals">
-		<div class="row"><span class="k">Cash</span><span class="v">{formatUsd(cashCents)}</span></div>
-		{#if lastPriceCents}
-			<div class="row"><span class="k">Last price</span><span class="v">{formatUsd(lastPriceCents)}</span></div>
-		{/if}
-		<div class="row"><span class="k">Commission</span><span class="v">$0.00</span></div>
-		{#if totalCost != null}
-			<div class="row big">
-				<span class="k">Total cost</span>
-				<span class="v">{formatUsd(totalCost)}</span>
-			</div>
-		{/if}
-	</div>
+	{#if shares && parseInt(shares, 10) > 0}
+		<div class="ticket__totals">
+			{#if lastPriceCents}
+				<div class="row"><span class="k">Last price</span><span class="v">{formatUsd(lastPriceCents)}</span></div>
+			{/if}
+			<div class="row"><span class="k">Commission</span><span class="v">$0.00</span></div>
+			{#if totalCost != null}
+				<div class="row big">
+					<span class="k">Total cost</span>
+					<span class="v">{formatUsd(totalCost)}</span>
+				</div>
+			{/if}
+		</div>
+	{/if}
 
 	{#if error}<p class="ticket__error">{error}</p>{/if}
 
@@ -171,6 +179,30 @@
 		line-height: 1.5;
 	}
 
+	.ticket__balance {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		padding: 4px 0 12px;
+		margin-bottom: 14px;
+		border-bottom: 1px dashed var(--color-rule);
+	}
+	.bal-k {
+		font-family: var(--font-mono);
+		font-size: 9px;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--color-ink-3);
+	}
+	.bal-v {
+		font-family: var(--font-display);
+		font-variation-settings: 'opsz' 24, 'wght' 500;
+		font-size: 18px;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.01em;
+		color: var(--color-ink);
+	}
+
 	.ticket__toggle {
 		display: inline-flex;
 		border: 1.5px solid var(--color-ink);
@@ -215,6 +247,12 @@
 		padding: 2px 0 4px;
 	}
 	.ticket__field .input:focus { border-bottom-width: 2px; }
+	.ticket__field .input::placeholder {
+		color: var(--color-ink-3);
+		font-style: italic;
+		font-variation-settings: 'opsz' 24, 'wght' 400;
+		opacity: 0.65;
+	}
 
 	.ticket__totals {
 		margin-top: 12px;

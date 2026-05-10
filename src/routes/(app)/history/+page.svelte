@@ -11,7 +11,7 @@
 			const isBuy = r.shares > 0;
 			return {
 				date: toIsoDate(r.executedAt),
-				type: isBuy ? 'Buy' : 'Sell',
+				type: isBuy ? 'BUY' : 'SELL',
 				symbol: r.symbol,
 				shares: Math.abs(r.shares).toString(),
 				price: formatUsd(r.priceCents),
@@ -34,7 +34,7 @@
 	<DataTable
 		columns={[
 			{ key: 'date', label: 'Date' },
-			{ key: 'type', label: 'Type' },
+			{ key: 'type', label: 'Type', mono: true },
 			{ key: 'symbol', label: 'Symbol' },
 			{ key: 'shares', label: 'Shares', tabular: true },
 			{ key: 'price', label: 'Price', tabular: true },

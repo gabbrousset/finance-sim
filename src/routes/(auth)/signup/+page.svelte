@@ -157,7 +157,12 @@
 	}
 	.row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
 	:global(.row .ico) { width: 14px; height: 14px; margin-right: 4px; }
-	.stamp-row { text-align: right; margin: 8px 0 16px; }
+	.stamp-row {
+		display: flex;
+		justify-content: flex-end;
+		margin: 8px 0 16px;
+		padding-right: 14px;
+	}
 	.check {
 		display: flex;
 		gap: 8px;

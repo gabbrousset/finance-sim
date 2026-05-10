@@ -24,7 +24,28 @@
 			width,
 			height,
 			legend: { show: false },
-			scales: { x: { time: true }, y: {} },
+			scales: {
+				x: { time: true },
+				y: {
+					// Frame the chart symmetrically around the starting equity, with a
+					// minimum visible half-window of 1% of starting cash. A $5 swing on
+					// a $10K account renders as a small wiggle (not a moonshot); a real
+					// $500 gain still breaks out of the band and dominates the chart.
+					range: (_u, dataMin, dataMax) => {
+						const minHalf = baseline * 0.01;
+						const dataHalf = Math.max(
+							Math.abs(dataMax - baseline),
+							Math.abs(dataMin - baseline)
+						);
+						if (dataHalf < minHalf) {
+							return [baseline - minHalf, baseline + minHalf];
+						}
+						const min = Math.min(dataMin, baseline) - dataHalf * 0.1;
+						const max = Math.max(dataMax, baseline) + dataHalf * 0.1;
+						return [min, max];
+					}
+				}
+			},
 			axes: [
 				{
 					stroke: () => getComputedStyle(host).getPropertyValue('--color-ink-3').trim() || '#8a7e66',

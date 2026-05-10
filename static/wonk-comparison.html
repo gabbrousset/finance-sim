@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fraunces · WONK 0 vs WONK 1 (live)</title>
+<style>
+  /* Source variable font with WONK axis intact — toggled per element via
+     font-variation-settings, not via pinning, so the browser/HarfBuzz can
+     apply the FeatureVariations substitutions. */
+  @font-face {
+    font-family: 'FrauncesVar';
+    src: url('/fonts/_wonky/Fraunces-Source.woff2') format('woff2');
+    font-style: normal; font-weight: 100 900; font-display: swap;
+  }
+  @font-face {
+    font-family: 'FrauncesVar';
+    src: url('/fonts/_wonky/Fraunces-Italic-Source.woff2') format('woff2');
+    font-style: italic; font-weight: 100 900; font-display: swap;
+  }
+
+  :root {
+    --paper: #f1e9d4; --paper-2: #ebe2c8;
+    --ink: #16110a; --ink-2: #4d4232; --ink-3: #8a7e66;
+    --rule: #b9ad8e; --stamp: #973128;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: 'FrauncesVar', Georgia, serif;
+    background: var(--paper); color: var(--ink);
+    padding: 48px 32px 96px;
+  }
+  header { max-width: 1200px; margin: 0 auto 40px; }
+  h1 {
+    font-variation-settings: 'opsz' 144, 'wght' 700, 'SOFT' 30, 'WONK' 0;
+    font-size: 44px; letter-spacing: -0.02em; margin: 0 0 8px;
+  }
+  .lede {
+    font-variation-settings: 'opsz' 24, 'wght' 400, 'WONK' 0;
+    font-size: 16px; line-height: 1.5; color: var(--ink-2); max-width: 70ch;
+    margin: 0 0 16px;
+  }
+  .lede code {
+    font-family: ui-monospace, monospace; font-size: 13px;
+    background: var(--paper-2); padding: 2px 5px; border-radius: 3px;
+  }
+
+  section {
+    max-width: 1200px; margin: 0 auto 56px;
+    border-top: 1px solid var(--rule); padding-top: 24px;
+  }
+  section h2 {
+    font-variation-settings: 'opsz' 60, 'wght' 600, 'SOFT' 30, 'WONK' 0;
+    font-size: 22px; margin: 0 0 4px;
+  }
+  section .meta {
+    font-family: ui-monospace, monospace;
+    font-size: 11px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 20px;
+  }
+
+  .pair {
+    display: grid; grid-template-columns: 80px 1fr;
+    align-items: baseline;
+    gap: 16px;
+    border-bottom: 1px dashed var(--rule);
+    padding: 12px 0;
+  }
+  .pair .lbl {
+    font-family: ui-monospace, monospace; font-size: 10px;
+    color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase;
+    text-align: right; align-self: center;
+  }
+  .pair .lbl.wonky { color: var(--stamp); }
+
+  /* Same family, axis values vary per row */
+  .text { font-size: 56px; line-height: 1.1; }
+  .text.italic { font-style: italic; }
+
+  .w0 { font-variation-settings: 'opsz' 144, 'wght' 500, 'SOFT' 30, 'WONK' 0; }
+  .w1 { font-variation-settings: 'opsz' 144, 'wght' 500, 'SOFT' 30, 'WONK' 1; }
+  .w0-tiny { font-variation-settings: 'opsz' 16, 'wght' 400, 'WONK' 0; font-size: 16px; line-height: 1.5; }
+  .w1-tiny { font-variation-settings: 'opsz' 16, 'wght' 400, 'WONK' 1; font-size: 16px; line-height: 1.5; }
+
+  .glyph-grid {
+    display: grid; grid-template-columns: repeat(8, 1fr);
+    gap: 0; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule);
+  }
+  .glyph-cell {
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 16px 8px 12px; text-align: center;
+  }
+  .glyph-cell .row {
+    display: flex; gap: 18px; justify-content: center; align-items: baseline;
+    font-size: 64px; line-height: 1;
+  }
+  .glyph-cell .row .a { color: var(--ink); font-variation-settings: 'opsz' 144, 'wght' 500, 'SOFT' 0, 'WONK' 0; }
+  .glyph-cell .row .b { color: var(--stamp); font-variation-settings: 'opsz' 144, 'wght' 500, 'SOFT' 0, 'WONK' 1; }
+  .glyph-cell .tag {
+    margin-top: 8px;
+    font-family: ui-monospace, monospace; font-size: 9px;
+    color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Fraunces · WONK 0 vs WONK 1 (live)</h1>
+    <p class="lede">
+      One <code>@font-face</code> using the un-pinned source variable font.
+      <span style="color: var(--ink); font-weight: 600">Black</span> rows: <code>'WONK' 0</code>.
+      <span style="color: var(--stamp); font-weight: 600">Red</span> rows: <code>'WONK' 1</code>.
+      The browser's shaper applies the GSUB FeatureVariations live, which is the only way to actually see what WONK does.
+    </p>
+    <p class="lede" style="font-style: italic;">
+      Heads up: previous "comparison" used pinned files that fontTools collapsed to the same output. <strong>This page is the real test.</strong>
+    </p>
+  </header>
+
+  <section>
+    <h2>Lowercase alphabet — upright</h2>
+    <p class="meta">opsz 144 · wght 500 · SOFT 30</p>
+    <div class="pair"><span class="lbl">WONK 0</span><div class="text w0">a b c d e f g h i j k l m n o p q r s t u v w x y z</div></div>
+    <div class="pair"><span class="lbl wonky">WONK 1</span><div class="text w1">a b c d e f g h i j k l m n o p q r s t u v w x y z</div></div>
+  </section>
+
+  <section>
+    <h2>Uppercase alphabet — upright</h2>
+    <p class="meta">opsz 144 · wght 500 · SOFT 30</p>
+    <div class="pair"><span class="lbl">WONK 0</span><div class="text w0">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z &amp;</div></div>
+    <div class="pair"><span class="lbl wonky">WONK 1</span><div class="text w1">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z &amp;</div></div>
+  </section>
+
+  <section>
+    <h2>Italic alphabet</h2>
+    <p class="meta">opsz 144 · wght 500 · SOFT 30</p>
+    <div class="pair"><span class="lbl">WONK 0</span><div class="text w0 italic">a b c d e f g h i j k l m n o p q r s t u v w x y z &amp;</div></div>
+    <div class="pair"><span class="lbl wonky">WONK 1</span><div class="text w1 italic">a b c d e f g h i j k l m n o p q r s t u v w x y z &amp;</div></div>
+  </section>
+
+  <section>
+    <h2>Body paragraph (opsz 16)</h2>
+    <p class="meta">where small text actually lives — does WONK matter at body sizes?</p>
+    <div class="pair"><span class="lbl">WONK 0</span><div class="w0-tiny">A daily ledger of paper positions, plainly kept. Track a fake portfolio. Run instant-replay competitions on past windows. The quick brown fox jumps over the lazy dog. Programming &amp; gardening.</div></div>
+    <div class="pair"><span class="lbl wonky">WONK 1</span><div class="w1-tiny">A daily ledger of paper positions, plainly kept. Track a fake portfolio. Run instant-replay competitions on past windows. The quick brown fox jumps over the lazy dog. Programming &amp; gardening.</div></div>
+  </section>
+
+  <footer style="max-width: 1200px; margin: 56px auto 0; padding-top: 16px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 12px; font-family: ui-monospace, monospace;">
+    served from /wonk-comparison.html · single @font-face · WONK toggled per row via font-variation-settings
+  </footer>
+</body>
+</html>

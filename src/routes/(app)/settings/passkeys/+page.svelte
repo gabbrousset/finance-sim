@@ -7,7 +7,7 @@
 	import FormError from '$lib/components/forms/FormError.svelte';
 	import SectionHead from '$lib/components/marks/SectionHead.svelte';
 	import Stamp from '$lib/components/marks/Stamp.svelte';
-	import { Cloud, Smartphone, Copy, Download } from 'lucide-svelte';
+	import { Copy, Download } from 'lucide-svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -164,13 +164,9 @@
 						<td class="muted">{relativeTime(pk.lastUsedAt)}</td>
 						<td>
 							{#if pk.backupState === 1}
-								<span class="sync sync--cloud" title="synced across devices">
-									<Cloud class="ico" /> synced
-								</span>
+								<span class="tag tag--sync" title="synced across devices">Synced</span>
 							{:else}
-								<span class="sync sync--local" title="this device only">
-									<Smartphone class="ico" /> local
-								</span>
+								<span class="tag tag--local" title="this device only">Local</span>
 							{/if}
 						</td>
 						<td>
@@ -373,17 +369,18 @@
 		margin-left: 4px;
 	}
 	.muted { color: var(--color-ink-3); font-family: var(--font-mono); font-size: 12px; }
-	.sync {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
+	.tag {
+		display: inline-block;
 		font-family: var(--font-mono);
-		font-size: 11px;
-		letter-spacing: 0.06em;
+		font-size: 9.5px;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		padding: 3px 8px;
+		border: 1px solid var(--color-rule);
 	}
-	.sync--cloud { color: var(--color-brass); }
-	.sync--local { color: var(--color-ink-3); }
-	:global(.sync .ico) { width: 14px; height: 14px; }
+	.tag--sync { color: var(--color-ink); border-color: var(--color-ink); }
+	.tag--local { color: var(--color-ink-3); border-color: var(--color-rule); }
+
 
 	.actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 	.rename {
