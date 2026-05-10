@@ -23,7 +23,7 @@
 	});
 </script>
 
-<SectionHead eyebrow="V — Competitions" title="New competition." meta="Open to invitees" />
+<SectionHead eyebrow="V · Competitions" title="New competition." meta="Open to invitees" />
 
 <form method="POST" use:enhance class="cn">
 	<div class="seg">

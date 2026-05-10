@@ -40,7 +40,7 @@
 	);
 </script>
 
-<SectionHead eyebrow="III — Quote" title="Quote." meta="Last reported close" />
+<SectionHead eyebrow="III · Quote" title="Quote." meta="Last reported close" />
 
 <form method="POST" use:enhance class="qf">
 	<TextField name="symbol" label="Symbol" bind:value={symbol} required />
@@ -63,7 +63,7 @@
 	</article>
 {:else if form?.error}
 	<div class="error-card">
-		<div class="error-card__sym">{form.symbol ?? '—'}</div>
+		<div class="error-card__sym">{form.symbol ?? '·'}</div>
 		<Stamp label="No record" variant="loss" size="md" />
 	</div>
 {/if}

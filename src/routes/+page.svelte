@@ -13,7 +13,7 @@
 	</header>
 
 	<main class="hero">
-		<div class="eyebrow">— Established MMXXVI —</div>
+		<div class="eyebrow">Established MMXXI</div>
 		<h1>An exchange for paper fortunes.</h1>
 		<p class="deck">For students of the tape.</p>
 		<div class="cta-row">
@@ -25,7 +25,7 @@
 	</main>
 
 	<footer class="foot">
-		Set in Fraunces, Newsreader &amp; JetBrains Mono · est. MMXXI
+		Set in <span class="font-display">Fraunces</span>, <span class="font-body">Newsreader</span> <span class="amp">&amp;</span> <span class="font-mono">JetBrains Mono</span> · est. MMXXI
 	</footer>
 </div>
 

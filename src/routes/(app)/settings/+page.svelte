@@ -15,7 +15,7 @@
 	});
 </script>
 
-<SectionHead eyebrow="VI — Settings" title="Settings." />
+<SectionHead eyebrow="VI · Settings" title="Settings." />
 
 <section class="sec">
 	<h2 class="sub">Particulars</h2>

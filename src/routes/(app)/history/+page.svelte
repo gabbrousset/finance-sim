@@ -23,7 +23,7 @@
 </script>
 
 <SectionHead
-	eyebrow="IV — Ledger"
+	eyebrow="IV · Ledger"
 	title="The Ledger."
 	meta={`${data.rows.length} ${data.rows.length === 1 ? 'entry' : 'entries'}`}
 />

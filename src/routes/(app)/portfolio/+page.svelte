@@ -32,7 +32,7 @@
 
 <Masthead {editionNo} date={new Date()} />
 
-<SectionHead eyebrow="I — Portfolio" title="The Portfolio." meta="As of close" />
+<SectionHead eyebrow="I · Portfolio" title="The Portfolio." meta="As of close" />
 
 <StatBlock {stats} />
 

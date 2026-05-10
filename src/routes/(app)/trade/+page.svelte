@@ -41,7 +41,7 @@
 		.replace(/, /, ' · ');
 </script>
 
-<SectionHead eyebrow="II — Trade" title="Buy or sell." meta="At market" />
+<SectionHead eyebrow="II · Trade" title="Buy or sell." meta="At market" />
 
 <form method="POST" use:enhance class="trade-form">
 	<input type="hidden" name="mode" value={mode} />

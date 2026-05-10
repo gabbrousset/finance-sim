@@ -14,7 +14,7 @@
 </script>
 
 <div class="head">
-	<SectionHead eyebrow="V — Competitions" title="Competitions." meta="Hosting + joined" />
+	<SectionHead eyebrow="V · Competitions" title="Competitions." meta="Hosting + joined" />
 	<a href="/competitions/new" class="cta">
 		<Button variant="primary">Create new</Button>
 	</a>

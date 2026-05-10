@@ -43,7 +43,7 @@
 </script>
 
 <div class="ticket">
-	<span class="ticket__dup">— duplicate · file copy —</span>
+	<span class="ticket__dup">duplicate · file copy</span>
 
 	<div class="ticket__head">
 		<h3>Order Ticket</h3>
@@ -113,7 +113,7 @@
 
 	{#if filled}
 		<div class="ticket__stamp">
-			<Stamp label="Filled" sub="— booked at {filled.atTime} —" size="lg" />
+			<Stamp label="Filled" sub="· booked at {filled.atTime} ·" size="lg" />
 		</div>
 	{/if}
 </div>

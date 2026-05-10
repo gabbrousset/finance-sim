@@ -60,13 +60,13 @@
 		if (data.dashboard.competition.status === 'finished') {
 			return {
 				label: 'Final',
-				sub: leader ? `Champion: ${leader.name}` : '— sealed —',
+				sub: leader ? `Champion: ${leader.name}` : '· sealed ·',
 				variant: 'ink' as const
 			};
 		}
 		return {
 			label: 'Provisional',
-			sub: `— sealed ${toIsoDate(data.dashboard.competition.endDate)} —`,
+			sub: `· sealed ${toIsoDate(data.dashboard.competition.endDate)} ·`,
 			variant: 'stamp' as const
 		};
 	});
@@ -91,8 +91,8 @@
 	<PullQuote badge={leader.name.charAt(0).toUpperCase()}>
 		"<strong>{leader.name}</strong>
 		{leader.returnPct > 0 ? 'up' : 'down'}
-		<strong>{(Math.abs(leader.returnPct) * 100).toFixed(1)}%</strong>
-		— <em>{leader.returnPct > 0 ? 'in good form.' : 'looking for a comeback.'}</em>"
+		<strong>{(Math.abs(leader.returnPct) * 100).toFixed(1)}%</strong>.
+		<em>{leader.returnPct > 0 ? 'In good form.' : 'Looking for a comeback.'}</em>"
 	</PullQuote>
 {/if}
 

@@ -101,7 +101,7 @@
 </script>
 
 <SectionHead
-	eyebrow="VI — Settings"
+	eyebrow="VI · Settings"
 	title="Passkeys."
 	meta={`${data.passkeys.length} on file`}
 />

@@ -37,7 +37,7 @@
 				<td><span class="rank" class:rank--gold={r.rank === 1}>{roman(r.rank)}</span></td>
 				<td class="name">
 					{r.name}
-					{#if r.caption}<span class="cap">— {r.caption}</span>{/if}
+					{#if r.caption}<span class="cap">· {r.caption}</span>{/if}
 				</td>
 				<td>{#if r.formDeltas}<FormBar deltas={r.formDeltas} />{/if}</td>
 				<td class="right total">{formatUsd(r.totalCents)}</td>

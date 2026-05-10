@@ -168,7 +168,7 @@ export class CompetitionService {
     const comp = this.findById(competitionId);
     if (!comp) throw new Error(`Competition not found: ${competitionId}`);
     if (comp.status !== 'open') {
-      throw new Error(`Cannot join competition with status '${comp.status}' — must be 'open'`);
+      throw new Error(`Cannot join competition with status '${comp.status}'. Must be 'open'.`);
     }
 
     // Check if already a member (idempotent)
