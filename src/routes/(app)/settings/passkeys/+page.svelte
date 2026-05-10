@@ -291,8 +291,11 @@
 			<form
 				method="POST"
 				action="?/regenerateCodes"
-				use:enhance={() => async ({ result }) => {
+				use:enhance={() => async ({ result, update }) => {
 					if (result.type === 'failure') codesStage = 'idle';
+					// Propagate the action's return ({ recoveryCodes }) into the page's
+					// form prop so the $effect can flip codesStage to 'showing'.
+					await update();
 				}}
 			>
 				<Button type="submit" variant="danger">Yes, regenerate</Button>
