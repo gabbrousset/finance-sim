@@ -72,10 +72,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{data.dashboard.competition.name} · finance-sim</title>
-</svelte:head>
-
 <SectionHead
 	eyebrow="Standings"
 	title={data.dashboard.competition.name}

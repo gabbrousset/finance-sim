@@ -23,10 +23,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>New competition · finance-sim</title>
-</svelte:head>
-
 <SectionHead eyebrow="V — Competitions" title="New competition." meta="Open to invitees" />
 
 <form method="POST" use:enhance class="cn">

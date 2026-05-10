@@ -1,6 +1,6 @@
 # auth overview
 
-finance-sim uses passkeys as the sole credential type. No passwords, no email. The only fallback is a set of one-time recovery codes shown once at signup.
+Curb & Co. uses passkeys as the sole credential type. No passwords, no email. The only fallback is a set of one-time recovery codes shown once at signup.
 
 ---
 

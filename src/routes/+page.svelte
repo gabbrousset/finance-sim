@@ -3,13 +3,9 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 </script>
 
-<svelte:head>
-	<title>finance-sim · paper-trading + competitions</title>
-</svelte:head>
-
 <div class="land">
 	<header class="top">
-		<span class="brand">finance<span class="amp">&amp;</span>sim</span>
+		<span class="brand">Curb <span class="amp">&amp;</span> Co.</span>
 		<div class="row">
 			<ThemeToggle />
 			<a href="/signin" class="signin">Sign in</a>

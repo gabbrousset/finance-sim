@@ -41,10 +41,6 @@
 		.replace(/, /, ' · ');
 </script>
 
-<svelte:head>
-	<title>Trade · finance-sim</title>
-</svelte:head>
-
 <SectionHead eyebrow="II — Trade" title="Buy or sell." meta="At market" />
 
 <form method="POST" use:enhance class="trade-form">

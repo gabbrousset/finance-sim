@@ -1,4 +1,4 @@
-# finance-sim
+# Curb & Co.
 
 paper-trading + live and historical competitions, built with sveltekit + passkeys.
 

@@ -21,7 +21,7 @@
 </script>
 
 <aside class="rail">
-	<div class="rail__brand">finance<span class="amp">&amp;</span>sim</div>
+	<div class="rail__brand">Curb <span class="amp">&amp;</span> Co.</div>
 	<div class="rail__edition">Vol III · No. {editionNo}</div>
 	<hr class="rail__rule" />
 

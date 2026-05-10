@@ -16,12 +16,8 @@
   );
 </script>
 
-<svelte:head>
-  <title>{data.competition.name} — finance-sim</title>
-</svelte:head>
-
 <header class="flex items-center justify-between p-6">
-  <a href="/" class="font-semibold">finance-sim</a>
+  <a href="/" class="font-semibold">Curb & Co.</a>
   <ThemeToggle />
 </header>
 

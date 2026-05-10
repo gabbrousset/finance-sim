@@ -33,7 +33,7 @@
 
 <div class="shell">
 	<header class="mobile-top">
-		<span class="brand">finance<span class="amp">&amp;</span>sim</span>
+		<span class="brand">Curb <span class="amp">&amp;</span> Co.</span>
 		<div class="row">
 			<ThemeToggle />
 			<form method="POST" action="/signout">

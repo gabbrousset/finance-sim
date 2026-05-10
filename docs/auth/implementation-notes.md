@@ -131,7 +131,7 @@ Both are configured via environment variables:
 const rp = {
   rpId: env.RP_ID ?? 'localhost',
   expectedOrigin: env.ORIGIN ?? 'http://localhost:5173',
-  rpName: 'finance-sim'
+  rpName: 'Curb & Co.'
 };
 ```
 

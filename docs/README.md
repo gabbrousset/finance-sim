@@ -1,4 +1,4 @@
-# finance-sim docs
+# Curb & Co. docs
 
 Implementation notes and design rationale for v3.
 

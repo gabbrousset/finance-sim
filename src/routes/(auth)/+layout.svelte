@@ -5,7 +5,7 @@
 
 <div class="auth">
 	<header class="top">
-		<a href="/" class="brand">finance<span class="amp">&amp;</span>sim</a>
+		<a href="/" class="brand">Curb <span class="amp">&amp;</span> Co.</a>
 		<ThemeToggle />
 	</header>
 	<main class="card-wrap">

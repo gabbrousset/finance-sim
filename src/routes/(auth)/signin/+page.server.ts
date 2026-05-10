@@ -7,7 +7,7 @@ import { env } from '$env/dynamic/private';
 const rp = {
   rpId: env.RP_ID ?? 'localhost',
   expectedOrigin: env.ORIGIN ?? 'http://localhost:5173',
-  rpName: 'finance-sim'
+  rpName: 'Curb & Co.'
 };
 
 export const load: PageServerLoad = async ({ locals }) => {

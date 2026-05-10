@@ -40,10 +40,6 @@
   const editionNo = $derived(((data as unknown) as { editionNo?: number }).editionNo ?? 1);
 </script>
 
-<svelte:head>
-	<title>Portfolio · finance-sim</title>
-</svelte:head>
-
 <Masthead {editionNo} date={new Date()} />
 
 <SectionHead eyebrow="I — Portfolio" title="The Portfolio." meta="As of close" />
