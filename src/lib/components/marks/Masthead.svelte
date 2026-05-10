@@ -18,7 +18,7 @@
   </div>
   <div class="mh__center">
     <div class="mh__title">Curb <span class="amp">&amp;</span> Co.</div>
-    <div class="mh__sub">A daily ledger of paper positions, plainly kept.</div>
+    <div class="mh__sub">Of ink, paper, and the patient investor.</div>
   </div>
   <div class="mh__side mh__side--r">
     {weekday}<br/>
