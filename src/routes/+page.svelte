@@ -15,9 +15,7 @@
 	<main class="hero">
 		<div class="eyebrow">— Established MMXXVI —</div>
 		<h1>An exchange for paper fortunes.</h1>
-		<p class="deck">
-			A book kept honestly. A reckoning at the close.
-		</p>
+		<p class="deck">For students of the tape.</p>
 		<div class="cta-row">
 			<a href="/signup" class="cta cta--primary">
 				Open an account <ArrowRight class="ico" />
