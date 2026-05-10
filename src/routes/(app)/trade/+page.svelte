@@ -63,7 +63,7 @@
 </form>
 
 {#if form?.success}
-	<p class="success">{form.message} <a href="/portfolio">view portfolio →</a></p>
+	<p class="success">{form.message} <a href="/portfolio">View the book →</a></p>
 {/if}
 
 {#if mode === 'sell' && data.holdings.length > 0}

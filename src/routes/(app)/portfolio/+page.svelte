@@ -44,7 +44,7 @@
 />
 
 {#if data.holdings.length === 0}
-  <p class="empty"><em>No holdings yet —</em> <a href="/trade">trade</a>.</p>
+  <p class="empty">The book is empty. <a href="/trade">Trade →</a></p>
 {:else}
   <table class="hold">
     <thead>

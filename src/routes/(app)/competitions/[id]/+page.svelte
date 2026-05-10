@@ -138,7 +138,7 @@
 			{/each}
 		</ul>
 	{:else}
-		<p class="empty"><em>No comp positions yet.</em></p>
+		<p class="empty"><em>No positions of record.</em></p>
 	{/if}
 </section>
 

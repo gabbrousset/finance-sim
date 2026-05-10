@@ -58,6 +58,6 @@ test('signup → trade → portfolio → sell', async ({ page, context }) => {
 
 	// 5. Portfolio should now show no holdings and cash back to $10,000.
 	await page.goto('/portfolio');
-	await expect(page.getByText(/no holdings yet/i)).toBeVisible({ timeout: 10_000 });
+	await expect(page.getByText(/the book is empty/i)).toBeVisible({ timeout: 10_000 });
 	await expect(page.getByText('$10,000.00').first()).toBeVisible();
 });

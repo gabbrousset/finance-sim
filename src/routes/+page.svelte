@@ -13,17 +13,16 @@
 	</header>
 
 	<main class="hero">
-		<div class="eyebrow">— A daily ledger of paper positions —</div>
-		<h1>Paper trading.<br /><em>Real friends.</em></h1>
+		<div class="eyebrow">— Established MMXXVI —</div>
+		<h1>An exchange for paper fortunes.</h1>
 		<p class="deck">
-			Track a fake portfolio. Run instant-replay competitions on past windows. Or compete live with
-			your friends. Passkey sign-in. No email.
+			A book kept honestly. A reckoning at the close.
 		</p>
 		<div class="cta-row">
 			<a href="/signup" class="cta cta--primary">
 				Open an account <ArrowRight class="ico" />
 			</a>
-			<a href="/signin" class="cta cta--quiet">Already have one</a>
+			<a href="/signin" class="cta cta--quiet">Already a member</a>
 		</div>
 	</main>
 
@@ -85,11 +84,6 @@
 		line-height: 0.95;
 		letter-spacing: -0.035em;
 		margin: 0;
-	}
-	h1 em {
-		font-style: italic;
-		color: var(--color-stamp);
-		font-variation-settings: 'opsz' 144, 'SOFT' 100, 'wght' 500;
 	}
 	.deck {
 		font-family: var(--font-body);

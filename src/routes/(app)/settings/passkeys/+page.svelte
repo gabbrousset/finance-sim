@@ -113,7 +113,7 @@
 {/if}
 
 <section class="sec">
-	<h2 class="sub">Your passkeys</h2>
+	<h2 class="sub">Devices on file</h2>
 
 	{#if revokeError && revokeError !== 'display name must be 1-40 chars' && revokeError !== 'device name must be 1-40 chars'}
 		<FormError message={revokeError} />
@@ -131,7 +131,7 @@
 		<tbody>
 			{#if data.passkeys.length === 0}
 				<tr>
-					<td colspan="4" class="empty"><em>No passkeys found.</em></td>
+					<td colspan="4" class="empty"><em>No devices on file.</em></td>
 				</tr>
 			{:else}
 				{#each data.passkeys as pk (pk.id)}
@@ -210,14 +210,14 @@
 </section>
 
 <section class="sec">
-	<h2 class="sub">Add a passkey</h2>
+	<h2 class="sub">Register another device</h2>
 
 	{#if addStage === 'registering'}
-		<p class="prose"><em>Follow your device's prompt to create a passkey…</em></p>
+		<p class="prose"><em>Confirm with your device…</em></p>
 	{:else if addStage === 'added'}
-		<p class="prose ok"><em>Passkey added successfully.</em></p>
+		<p class="prose ok"><em>Device registered.</em></p>
 		<Button type="button" variant="quiet" onclick={() => (addStage = 'idle')}>
-			Add another
+			Register another
 		</Button>
 	{:else}
 		<FormError message={addError} />
@@ -240,7 +240,7 @@
 				};
 			}}
 		>
-			<Button type="submit" variant="primary">Add a passkey on this device</Button>
+			<Button type="submit" variant="primary">Register this device</Button>
 		</form>
 	{/if}
 </section>
@@ -250,7 +250,7 @@
 
 	{#if codesStage === 'showing'}
 		<p class="prose">
-			Save these codes. Each works once. These replace your previous codes.
+			A fresh set. Each works once.
 		</p>
 		<pre class="codes">{recoveryCodes.join('\n')}</pre>
 		<div class="row">
@@ -277,7 +277,7 @@
 		</Button>
 	{:else if codesStage === 'confirm'}
 		<p class="prose">
-			This will invalidate all existing recovery codes and generate 8 new ones.
+			The current eight codes will lapse. A fresh set is issued.
 		</p>
 		<div class="row">
 			<form
@@ -290,16 +290,16 @@
 					await update();
 				}}
 			>
-				<Button type="submit" variant="danger">Yes, regenerate</Button>
+				<Button type="submit" variant="danger">Yes, replace</Button>
 			</form>
 			<Button type="button" variant="quiet" onclick={() => (codesStage = 'idle')}>Cancel</Button>
 		</div>
 	{:else}
 		<p class="prose">
-			Regenerate all recovery codes. Your current codes will stop working immediately.
+			Replace all eight codes. The current set lapses at once.
 		</p>
 		<Button type="button" variant="quiet" onclick={() => (codesStage = 'confirm')}>
-			Regenerate recovery codes
+			Replace recovery codes
 		</Button>
 	{/if}
 </section>

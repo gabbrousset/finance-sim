@@ -44,7 +44,6 @@
 </script>
 
 <h1 class="auth-h">Welcome back.</h1>
-<p class="auth-deck"><em>Sign in with your passkey.</em></p>
 
 {#if stage === 'idle' || stage === 'authenticating'}
 	<form
@@ -68,7 +67,7 @@
 	>
 		<FormError message={errorMsg} />
 		<Button type="submit" variant="primary" disabled={stage === 'authenticating'}>
-			{stage === 'authenticating' ? 'Waiting for passkey…' : 'Sign in with passkey'}
+			{stage === 'authenticating' ? 'Awaiting confirmation…' : 'Enter.'}
 		</Button>
 	</form>
 	<p class="auth-foot">

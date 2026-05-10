@@ -18,7 +18,7 @@
 <SectionHead eyebrow="VI — Settings" title="Settings." />
 
 <section class="sec">
-	<h2 class="sub">Account</h2>
+	<h2 class="sub">Particulars</h2>
 	<p class="line"><span class="lbl">Username</span> <span class="val">{data.user.username}</span></p>
 	<form method="POST" action="?/updateDisplayName" use:enhance class="form">
 		<TextField name="displayName" label="Display name" bind:value={displayName} />
@@ -31,9 +31,9 @@
 </section>
 
 <section class="sec">
-	<h2 class="sub">Security</h2>
-	<p class="prose">Manage your passkeys and recovery codes.</p>
-	<a href="/settings/passkeys" class="link">Manage passkeys →</a>
+	<h2 class="sub">Keys</h2>
+	<p class="prose">Devices and recovery codes on file.</p>
+	<a href="/settings/passkeys" class="link">Keys on file →</a>
 </section>
 
 <style>

@@ -9,7 +9,7 @@
 </script>
 
 <h1 class="auth-h">Recovery.</h1>
-<p class="auth-deck"><em>Enter your username and a recovery code to regain access.</em></p>
+<p class="auth-deck"><em>Username and one recovery code.</em></p>
 
 <form method="POST" use:enhance class="auth-form">
 	<TextField name="username" label="Username" required autocomplete="username" />

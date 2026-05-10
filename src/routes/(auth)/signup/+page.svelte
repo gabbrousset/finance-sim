@@ -64,7 +64,7 @@
 
 <h1 class="auth-h">Open an account.</h1>
 <p class="auth-deck">
-	<em>No email required. You'll create a passkey and get 8 recovery codes.</em>
+	<em>One device, eight codes, no correspondence.</em>
 </p>
 
 {#if stage === 'form'}
@@ -98,7 +98,7 @@
 {:else if stage === 'success'}
 	<h2 class="auth-h2">Save your recovery codes.</h2>
 	<p class="auth-deck">
-		<em>These are your only fallback if you lose all your passkeys. Each works once.</em>
+		<em>Eight codes. Each works once. Note them down.</em>
 	</p>
 	<pre class="codes">{recoveryCodes.join('\n')}</pre>
 	<div class="row">

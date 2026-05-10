@@ -74,7 +74,7 @@ export const actions: Actions = {
 			symbol,
 			shares,
 			priceCents: quote.priceCents,
-			message: `${mode === 'buy' ? 'bought' : 'sold'} ${shares} ${symbol} @ ${formatUsd(quote.priceCents)}`
+			message: `Filled — ${mode === 'buy' ? 'Bought' : 'Sold'} ${shares} ${symbol} @ ${formatUsd(quote.priceCents)}`
 		};
 	}
 };

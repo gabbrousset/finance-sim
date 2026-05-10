@@ -29,7 +29,7 @@
 />
 
 {#if data.rows.length === 0}
-	<p class="empty"><em>No trades yet —</em> <a href="/trade">trade</a>.</p>
+	<p class="empty">No entries of record. <a href="/trade">Trade →</a></p>
 {:else}
 	<DataTable
 		columns={[

@@ -37,7 +37,7 @@
 		</form>
 		{#if form?.error}<p class="err">{form.error}</p>{/if}
 	{:else}
-		<p class="closed"><em>This competition is no longer open for new members.</em></p>
+		<p class="closed"><em>Closed to new entries.</em></p>
 	{/if}
 </div>
 

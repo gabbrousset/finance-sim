@@ -22,7 +22,7 @@
 
 {#if data.comps.length === 0}
 	<p class="empty">
-		<em>No competitions yet —</em> <a href="/competitions/new">create one</a> or join via invite link.
+		None of record. <a href="/competitions/new">Open one →</a> or join by invitation.
 	</p>
 {:else}
 	<ul class="list">
