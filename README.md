@@ -18,6 +18,6 @@ work in progress on the `v3` branch.
 - [`docs/tech-choices.md`](./docs/tech-choices.md) — why this stack
 - [`docs/data-model.md`](./docs/data-model.md) — schema + invariants
 - [`docs/auth/`](./docs/auth/) — passkeys end-to-end
-- [`docs/market-data/`](./docs/market-data/) — finnhub + stooq + caching
+- [`docs/market-data/`](./docs/market-data/) — finnhub + twelvedata + caching
 - [`docs/competitions/`](./docs/competitions/) — live + instant-replay
 - [`docs/testing.md`](./docs/testing.md), [`docs/deployment.md`](./docs/deployment.md)
